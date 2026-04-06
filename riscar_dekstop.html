@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RISC·AR | Predictive Construction Risk Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --green: #3DB54A;
+  --green-d: #2A8C35;
+  --green-l: #A8E6AF;
+  --green-pale: #EBF7EC;
+  --yellow: #F5C842;
+  --orange: #F0844C;
+  --red: #E53E3E;
+  --red-pale: #FEE2E2;
+  --bg: #F2F4F2;
+  --sidebar: #18261A;
+  --sidebar-h: #22331F;
+  --card: #FFFFFF;
+  --t1: #18261A;
+  --t2: #5A6B5C;
+  --tm: #9CAA9E;
+  --border: #DDE8DE;
+  --sh: 0 2px 12px rgba(24,38,26,0.07);
+  --sh-lg: 0 8px 32px rgba(24,38,26,0.12);
+  --r: 14px;
+  --rs: 8px;
+  --sw: 248px;
+  font-family: 'Poppins', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--t1); display:flex; height:100vh; overflow:hidden; }
+
+/* ── SIDEBAR ── */
+.sb { width:var(--sw); background:var(--sidebar); display:flex; flex-direction:column; flex-shrink:0; }
+.sb-logo { padding:20px 18px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
+.logo-row { display:flex; align-items:center; gap:10px; }
+.logo-mark {
+  width:38px; height:38px; border-radius:10px;
+  background:linear-gradient(135deg,var(--green),var(--green-d));
+  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+}
+.logo-name { font-weight:800; font-size:18px; color:#fff; letter-spacing:-0.02em; }
+.logo-name span { color:var(--green); }
+.logo-tag { font-size:9px; color:var(--green-l); font-weight:400; letter-spacing:0.1em; text-transform:uppercase; margin-top:1px; }
+
+.sb-proj {
+  margin:12px 12px 0; padding:11px 14px;
+  background:rgba(61,181,74,0.1); border:1px solid rgba(61,181,74,0.2);
+  border-radius:var(--rs); cursor:pointer;
+}
+.sb-proj .pl { font-size:9px; color:var(--green-l); text-transform:uppercase; letter-spacing:0.08em; font-weight:500; }
+.sb-proj .pn { font-size:11.5px; font-weight:700; color:#fff; margin-top:2px; }
+.sb-proj .pm { font-size:9.5px; color:var(--green-l); margin-top:3px; display:flex; align-items:center; gap:5px; }
+.dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.sb-nav { padding:14px 10px; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:2px; }
+.nl { font-size:9px; color:var(--tm); text-transform:uppercase; letter-spacing:0.1em; padding:10px 8px 5px; font-weight:500; }
+.ni {
+  display:flex; align-items:center; gap:9px; padding:9px 11px;
+  border-radius:var(--rs); cursor:pointer; transition:all .15s;
+  color:rgba(255,255,255,.5); font-size:12.5px; font-weight:500;
+  border-left:2px solid transparent;
+}
+.ni:hover { background:var(--sidebar-h); color:#fff; }
+.ni.active { background:rgba(61,181,74,0.12); color:var(--green-l); border-left-color:var(--green); }
+.ni .ic { font-size:14px; width:18px; text-align:center; }
+.nb { margin-left:auto; background:var(--red); color:#fff; font-size:9.5px; font-weight:700; min-width:17px; height:17px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
+.nb.g { background:var(--green); }
+
+.sb-foot { padding:12px 10px; border-top:1px solid rgba(255,255,255,0.06); }
+.uc { display:flex; align-items:center; gap:9px; padding:8px 10px; border-radius:var(--rs); cursor:pointer; }
+.ua { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--green),var(--green-d)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:11px; flex-shrink:0; }
+.ui .un { font-size:11.5px; font-weight:600; color:#fff; }
+.ui .ur { font-size:10px; color:var(--tm); font-weight:400; }
+.od { width:7px; height:7px; border-radius:50%; background:var(--green); margin-left:auto; animation:pulse 2s infinite; }
+
+/* ── MAIN ── */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.topbar {
+  background:var(--card); border-bottom:1px solid var(--border);
+  padding:0 26px; height:58px; display:flex; align-items:center; gap:14px; flex-shrink:0;
+}
+.tb-title { font-weight:700; font-size:15px; }
+.tb-bc { font-size:10.5px; color:var(--tm); font-weight:400; margin-top:1px; }
+.tb-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.btn { padding:7px 14px; border-radius:7px; font-size:11.5px; font-weight:600; cursor:pointer; border:none; font-family:'Poppins',sans-serif; transition:all .15s; }
+.btn-p { background:var(--green); color:#fff; }
+.btn-p:hover { background:var(--green-d); }
+.btn-g { background:transparent; border:1.5px solid var(--border); color:var(--t2); }
+.btn-g:hover { background:var(--green-pale); border-color:var(--green); }
+.ib { width:32px; height:32px; border-radius:7px; border:1.5px solid var(--border); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; position:relative; transition:all .15s; }
+.ib:hover { background:var(--green-pale); border-color:var(--green); }
+.nd { position:absolute; top:3px; right:3px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1.5px solid var(--card); }
+
+/* ── CONTENT ── */
+.ct { flex:1; overflow-y:auto; padding:22px 26px; display:none; }
+.ct.active { display:block; animation:fi .2s ease; }
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CARDS ── */
+.card { background:var(--card); border-radius:var(--r); padding:18px; box-shadow:var(--sh); border:1px solid var(--border); }
+.ch { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.ct-title { font-weight:700; font-size:13.5px; }
+.ct-sub { font-size:10.5px; color:var(--tm); margin-top:1px; font-weight:400; }
+.ca { font-size:11px; color:var(--green); font-weight:600; cursor:pointer; }
+
+/* ── KPI ── */
+.krow { display:grid; grid-template-columns:repeat(4,1fr); gap:13px; margin-bottom:18px; }
+.kc {
+  background:var(--card); border-radius:var(--r); padding:16px 18px;
+  border:1px solid var(--border); box-shadow:var(--sh);
+  position:relative; overflow:hidden; transition:transform .15s,box-shadow .15s; cursor:default;
+}
+.kc:hover { transform:translateY(-2px); box-shadow:var(--sh-lg); }
+.kc::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:var(--r) var(--r) 0 0; }
+.kc.r::before{background:var(--red)} .kc.o::before{background:var(--orange)} .kc.y::before{background:var(--yellow)} .kc.g::before{background:var(--green)}
+.kl { font-size:10px; color:var(--tm); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:7px; font-weight:600; }
+.kv { font-weight:800; font-size:24px; color:var(--t1); line-height:1; }
+.ks { font-size:10.5px; color:var(--t2); margin-top:5px; display:flex; align-items:center; gap:4px; font-weight:400; }
+.kch { display:inline-flex; align-items:center; gap:2px; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; }
+.kch.up{background:var(--green-pale);color:var(--green-d)} .kch.dn{background:var(--red-pale);color:var(--red)}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:14px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+.mb14{margin-bottom:14px} .mb18{margin-bottom:18px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:600}
+.bd{background:var(--green-pale);color:var(--green-d)}
+.bp{background:var(--red-pale);color:var(--red)}
+.bpg{background:#FEF3C7;color:#92400E}
+.bh{background:var(--red-pale);color:var(--red)}
+.bm{background:#FEF3C7;color:#92400E}
+.bl{background:var(--green-pale);color:var(--green-d)}
+
+/* ── RISK TABLE ── */
+.rt{width:100%;border-collapse:collapse;font-size:12px}
+.rt th{text-align:left;padding:7px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tm);border-bottom:1px solid var(--border);font-weight:600}
+.rt td{padding:9px 10px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;font-weight:400}
+.rt tr:last-child td{border-bottom:none}
+.rt tr:hover td{background:var(--green-pale)}
+.rpnbar{display:flex;align-items:center;gap:7px}
+.rb{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.rf{height:100%;border-radius:2px;transition:width .8s}
+.rv{font-weight:700;font-size:11px;min-width:28px;text-align:right}
+code{font-family:'Courier New',monospace;font-size:10px;background:var(--bg);padding:1px 5px;border-radius:3px}
+
+/* ── VAL LIST ── */
+.vi{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.vi:last-child{border-bottom:none}
+.vn{font-weight:600}
+.vc{font-size:10px;color:var(--tm);font-weight:400;margin-top:1px}
+
+/* ── INBOX ── */
+.iitem{padding:13px;border-radius:var(--rs);border:1px solid var(--border);margin-bottom:9px;cursor:pointer;transition:all .15s}
+.iitem:hover{border-color:var(--green);background:var(--green-pale)}
+.iitem.unread{border-left:3px solid var(--green)}
+.iitem.high-risk{border-left:3px solid var(--red)}
+.is{font-weight:700;font-size:12.5px}
+.ir{font-size:10.5px;color:var(--tm);font-weight:400}
+.im{font-size:11.5px;color:var(--t2);margin-top:4px;line-height:1.5;font-weight:400}
+.imeta{display:flex;align-items:center;gap:7px;margin-top:7px}
+.it{font-size:10px;color:var(--tm);margin-left:auto}
+.itabs{display:flex;gap:0;margin-bottom:14px;background:var(--bg);border-radius:7px;padding:3px}
+.itab{flex:1;padding:7px;border-radius:5px;text-align:center;font-size:11.5px;font-weight:500;cursor:pointer;color:var(--tm);transition:all .15s}
+.itab.active{background:var(--card);color:var(--t1);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* ── PROJECTS ── */
+.pc{background:var(--card);border-radius:var(--r);padding:16px;border:1px solid var(--border);cursor:pointer;transition:all .2s;box-shadow:var(--sh)}
+.pc:hover{transform:translateY(-2px);box-shadow:var(--sh-lg);border-color:var(--green)}
+.pbar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:5px}
+.pfill{height:100%;background:var(--green);border-radius:3px}
+.pstats{display:flex;gap:14px;margin-top:10px}
+.ps .pv{font-weight:700;font-size:13px}
+.ps .lbl{font-size:10px;color:var(--tm);font-weight:400}
+
+/* ── KNOWLEDGE BASE ── */
+.kbtag{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--t2);transition:all .15s;background:var(--card)}
+.kbtag.active,.kbtag:hover{border-color:var(--green);background:var(--green-pale);color:var(--green-d)}
+.kbtags{display:flex;flex-wrap:wrap;gap:7px}
+
+/* KB table */
+.kbt{width:100%;border-collapse:collapse;font-size:11.5px}
+.kbt th{background:var(--sidebar);color:var(--green-l);padding:9px 10px;text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;position:sticky;top:0;z-index:2}
+.kbt td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-weight:400;line-height:1.45}
+.kbt tr:hover td{background:var(--green-pale);cursor:pointer}
+.rpnc{display:inline-block;padding:2px 8px;border-radius:4px;font-weight:700;font-size:11.5px}
+.rph{background:var(--red-pale);color:var(--red)}
+.rpm{background:#FDE8D8;color:#C05621}
+.rpy{background:#FEF3C7;color:#92400E}
+.rpl{background:var(--green-pale);color:var(--green-d)}
+.kbwrap{max-height:440px;overflow-y:auto;border-radius:var(--rs);border:1px solid var(--border)}
+
+/* KB filters */
+.kbfilters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.kbf-row{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;flex-wrap:wrap}
+.kbf-group{display:flex;flex-direction:column;gap:6px}
+.kbf-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tm)}
+
+/* detail modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:26px;max-width:680px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.mrow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.mrow:last-child{border-bottom:none}
+.mlbl{color:var(--tm);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;min-width:140px;flex-shrink:0}
+.mval{color:var(--t1);font-weight:500;text-align:right;flex:1;line-height:1.5}
+
+/* ── BIM ── */
+.bimv{background:#0F1A10;border-radius:var(--r);height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid var(--border)}
+.bimvbg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#1a3a1c 0%,#0F1A10 70%)}
+.bimgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(61,181,74,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(61,181,74,.07) 1px,transparent 1px);background-size:38px 38px}
+.bimp{position:relative;text-align:center;color:rgba(255,255,255,.4);z-index:1}
+.bimp .ico{font-size:44px;margin-bottom:8px}
+.bimp p{font-size:11.5px;line-height:1.6}
+.bimctrl{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:2}
+.bcb{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;backdrop-filter:blur(4px)}
+.bcb:hover{background:rgba(61,181,74,.3)}
+.bimleg{position:absolute;bottom:10px;left:10px;display:flex;gap:9px;z-index:2}
+.bll{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.6)}
+.bld{width:8px;height:8px;border-radius:2px}
+.bimbadge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.5);border:1px solid rgba(61,181,74,.3);border-radius:6px;padding:4px 9px;color:var(--green);font-size:10px;backdrop-filter:blur(4px);z-index:2;font-weight:500}
+
+/* ── RFMEA table ── */
+.rfmt{width:100%;border-collapse:collapse;font-size:11.5px}
+.rfmt th{background:var(--sidebar);color:var(--green-l);padding:8px 9px;text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.rfmt td{padding:8px 9px;border-bottom:1px solid var(--border);vertical-align:middle;font-weight:400}
+.rfmt tr:hover td{background:var(--green-pale)}
+.rfmt .num{text-align:center;font-weight:600}
+
+/* ── PROFILE ── */
+.phdr{background:linear-gradient(135deg,var(--sidebar) 0%,#1e3520 100%);border-radius:var(--r);padding:26px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:18px;border:1px solid rgba(61,181,74,.2)}
+.pav{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-d));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;border:3px solid rgba(61,181,74,.4);flex-shrink:0}
+.pinfo .pn{font-weight:800;font-size:19px}
+.pinfo .pr{color:var(--green-l);font-size:12px;margin-top:2px;font-weight:400}
+.pinfo .pe{font-size:10.5px;color:rgba(255,255,255,.4);margin-top:5px;font-weight:400}
+.pstats2{display:flex;gap:22px;margin-left:auto}
+.pstat2{text-align:center}
+.pstat2 .v{font-weight:800;font-size:20px;color:var(--green-l)}
+.pstat2 .l{font-size:10.5px;color:rgba(255,255,255,.5);margin-top:1px;font-weight:400}
+.pdr{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.pdr:last-child{border-bottom:none}
+.pdl{color:var(--tm);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.pdv{font-weight:600;color:var(--t1)}
+
+/* ── SECTION TITLES ── */
+.stitle{font-weight:800;font-size:17px;margin-bottom:3px}
+.ssub{font-size:11px;color:var(--tm);margin-bottom:18px;font-weight:400}
+
+/* ── COST HIGHLIGHT ── */
+.costh{background:linear-gradient(135deg,var(--green-pale),#d4f0d7);border:1.5px solid var(--green);border-radius:var(--r);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.cico{font-size:30px}
+.camt{font-weight:800;font-size:20px;color:var(--green-d)}
+.clbl{font-size:11px;color:var(--t2);margin-top:1px;font-weight:400}
+.cpct{margin-left:auto;text-align:right}
+.cpct .big{font-weight:800;font-size:26px;color:var(--green)}
+.cpct .lbl{font-size:10.5px;color:var(--tm);font-weight:400}
+
+/* ── SUMMARY ── */
+.srow{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:var(--rs);border:1px solid var(--border);margin-bottom:7px;cursor:pointer;transition:all .15s}
+.srow:hover{border-color:var(--green);background:var(--green-pale)}
+
+/* SEARCH */
+.searchbar{width:100%;padding:9px 14px;border-radius:var(--rs);border:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:12.5px;outline:none;background:var(--card);color:var(--t1);transition:border .15s}
+.searchbar:focus{border-color:var(--green)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+canvas{max-width:100%}
+
+/* RFMEA score bars */
+.scorebar-wrap{display:flex;align-items:center;gap:6px;min-width:90px}
+.scorebar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.scorefill{height:100%;border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="logo-row">
+      <div class="logo-mark">🏗</div>
+      <div>
+        <div class="logo-name">RISC<span>·AR</span></div>
+        <div class="logo-tag">Risk Intelligence & Site Control</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-proj" onclick="showPage('dashboard')">
+    <div class="pl">Active Project</div>
+    <div class="pn">Djoglo Bridge · Mojokerto</div>
+    <div class="pm"><span class="dot"></span> 32% complete · Week 12</div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="nl">Monitoring</div>
+    <div class="ni active" onclick="showPage('dashboard')"><span class="ic">📊</span> Risk Dashboard</div>
+    <div class="ni" onclick="showPage('projects')"><span class="ic">📁</span> Projects</div>
+    <div class="ni" onclick="showPage('summary')"><span class="ic">🌐</span> Multi-Project View</div>
+
+    <div class="nl">Analysis</div>
+    <div class="ni" onclick="showPage('rfmea')"><span class="ic">📋</span> RFMEA Calculator</div>
+    <div class="ni" onclick="showPage('knowledge')"><span class="ic">🧠</span> Knowledge Base</div>
+    <div class="ni" onclick="showPage('bim')"><span class="ic">🔷</span> BIM-AR Viewer</div>
+
+    <div class="nl">Communication</div>
+    <div class="ni" onclick="showPage('inbox')"><span class="ic">📬</span> Inbox <span class="nb">3</span></div>
+    <div class="ni" onclick="showPage('profile')"><span class="ic">👤</span> Profile</div>
+
+    <div class="nl">Integrations</div>
+    <div class="ni" onclick="alert('Opening Power BI...')"><span class="ic">📈</span> Power BI <span class="nb g">↗</span></div>
+    <div class="ni" onclick="alert('OneDrive Sync...')"><span class="ic">☁️</span> OneDrive Sync</div>
+    <div class="ni" onclick="alert('Dynamo Link...')"><span class="ic">⚙️</span> Dynamo Link</div>
+  </nav>
+
+  <div class="sb-foot">
+    <div class="uc" onclick="showPage('profile')">
+      <div class="ua">AA</div>
+      <div class="ui"><div class="un">Mr. Axsyal Aditya</div><div class="ur">BIM Manager</div></div>
+      <div class="od"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div><div class="tb-title" id="tb-title">Risk Dashboard</div><div class="tb-bc" id="tb-bc">Djoglo Bridge · Mojokerto · Week 12 of 24</div></div>
+    <div class="tb-right">
+      <button class="btn btn-g" onclick="alert('Power BI...')">↗ Power BI</button>
+      <button class="btn btn-g" onclick="alert('Export...')">📥 Export</button>
+      <button class="btn btn-p" onclick="alert('Sync OneDrive...')">⟳ Sync</button>
+      <button class="ib" onclick="showPage('inbox')">🔔<span class="nd"></span></button>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="ct active" id="page-dashboard">
+    <div class="krow">
+      <div class="kc r"><div class="kl">Highest RPN Score</div><div class="kv">378</div><div class="ks">BR-FD-01 · Pile Bearing <span class="kch dn">↑ Critical</span></div></div>
+      <div class="kc o"><div class="kl">Cost Implication</div><div class="kv" style="font-size:18px">Rp 38.27M</div><div class="ks"><span class="kch dn">+30%</span> vs baseline</div></div>
+      <div class="kc y"><div class="kl">Schedule Delay</div><div class="kv">31 <span style="font-size:14px;font-weight:500">days</span></div><div class="ks">Risk buffer <span class="kch dn">Low</span></div></div>
+      <div class="kc g"><div class="kl">Risks Resolved</div><div class="kv">14</div><div class="ks">of 21 total <span class="kch up">↑ 67%</span></div></div>
+    </div>
+    <div class="costh">
+      <div class="cico">💡</div>
+      <div><div class="camt">Rp 12.450.000</div><div class="clbl">Total savings from predictive risk mitigation this month</div></div>
+      <div class="cpct"><div class="big">24%</div><div class="lbl">reduction vs reactive approach</div></div>
+    </div>
+    <div class="g2 mb14">
+      <div class="card"><div class="ch"><div><div class="ct-title">Top 8 RPN · RFMEA</div><div class="ct-sub">O × S × D ranking</div></div><span class="ca" onclick="showPage('rfmea')">View all →</span></div><canvas id="rpnChart" height="210"></canvas></div>
+      <div class="card"><div class="ch"><div><div class="ct-title">Risk Distribution by Level</div><div class="ct-sub">High / Medium / Low</div></div></div><canvas id="riskLevelChart" height="210"></canvas></div>
+    </div>
+    <div class="g2 mb14">
+      <div class="card"><div class="ch"><div><div class="ct-title">S-Curve · Schedule Progress</div><div class="ct-sub">Planned vs Actual vs Forecast</div></div></div><canvas id="scurveChart" height="190"></canvas></div>
+      <div class="card"><div class="ch"><div><div class="ct-title">Risk Status Overview</div><div class="ct-sub">On Progress / Mitigated / Resolved</div></div></div><canvas id="statusChart" height="190"></canvas></div>
+    </div>
+    <div class="g21">
+      <div class="card">
+        <div class="ch"><div><div class="ct-title">Risk Register · Active Risks</div><div class="ct-sub">Sorted by RPN descending</div></div><span class="ca" onclick="showPage('rfmea')">Open RFMEA →</span></div>
+        <table class="rt">
+          <thead><tr><th>Risk ID</th><th>Description</th><th>WBS</th><th>O</th><th>S</th><th>D</th><th>RPN</th><th>Level</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>R-007</code></td><td>East Abutment structural delay</td><td><code>D-ABT.008</code></td><td style="text-align:center;font-weight:600">1</td><td style="text-align:center;font-weight:600">10</td><td style="text-align:center;font-weight:600">5</td><td><div class="rpnbar"><div class="rb"><div class="rf" style="width:100%;background:#E53E3E"></div></div><span class="rv" style="color:#E53E3E">500</span></div></td><td><span class="badge bh">High</span></td><td><span class="badge bp">Pending</span></td></tr>
+            <tr><td><code>R-013</code></td><td>D13-Pile schedule deviation</td><td><code>D13-PL</code></td><td style="text-align:center;font-weight:600">4</td><td style="text-align:center;font-weight:600">8</td><td style="text-align:center;font-weight:600">4</td><td><div class="rpnbar"><div class="rb"><div class="rf" style="width:80%;background:#F0844C"></div></div><span class="rv" style="color:#F0844C">400</span></div></td><td><span class="badge bm">Medium</span></td><td><span class="badge bpg">On Progress</span></td></tr>
+            <tr><td><code>R-004</code></td><td>Diaphragm wall casting quality</td><td><code>D-DW.002</code></td><td style="text-align:center;font-weight:600">3</td><td style="text-align:center;font-weight:600">7</td><td style="text-align:center;font-weight:600">5</td><td><div class="rpnbar"><div class="rb"><div class="rf" style="width:70%;background:#F5C842"></div></div><span class="rv" style="color:#92400E">350</span></div></td><td><span class="badge bm">Medium</span></td><td><span class="badge bpg">On Progress</span></td></tr>
+            <tr><td><code>R-002</code></td><td>Girder beam alignment tolerance</td><td><code>AB01-GB</code></td><td style="text-align:center;font-weight:600">2</td><td style="text-align:center;font-weight:600">6</td><td style="text-align:center;font-weight:600">4</td><td><div class="rpnbar"><div class="rb"><div class="rf" style="width:47%;background:#F5C842"></div></div><span class="rv" style="color:#92400E">240</span></div></td><td><span class="badge bm">Medium</span></td><td><span class="badge bd">Mitigated</span></td></tr>
+            <tr><td><code>R-009</code></td><td>Wingwall rebar coverage</td><td><code>WW-EW</code></td><td style="text-align:center;font-weight:600">2</td><td style="text-align:center;font-weight:600">5</td><td style="text-align:center;font-weight:600">4</td><td><div class="rpnbar"><div class="rb"><div class="rf" style="width:40%;background:#3DB54A"></div></div><span class="rv" style="color:#3DB54A">200</span></div></td><td><span class="badge bl">Low</span></td><td><span class="badge bd">Resolved</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct-title">Field Validations</div><div class="ct-sub">Recent AR scan confirmations</div></div>
+        <div class="vi"><div><div class="vn">West Abutment</div><div class="vc">A01 · 2 days ago</div></div><span class="badge bd">Done</span></div>
+        <div class="vi"><div><div class="vn">East Abutment</div><div class="vc">C02 · Action required</div></div><span class="badge bp">Pending</span></div>
+        <div class="vi"><div><div class="vn">Girder Beam</div><div class="vc">AB01 · 3 days ago</div></div><span class="badge bd">Done</span></div>
+        <div class="vi"><div><div class="vn">Diaphragm Wall</div><div class="vc">DW-001 · Inspector on site</div></div><span class="badge bpg">On Progress</span></div>
+        <div class="vi"><div><div class="vn">East Wingwall</div><div class="vc">EW-A · 1 day ago</div></div><span class="badge bd">Done</span></div>
+        <div class="vi"><div><div class="vn">West Wingwall</div><div class="vc">WW-A · 1 day ago</div></div><span class="badge bd">Done</span></div>
+        <div style="margin-top:12px"><button class="btn btn-p" style="width:100%;font-size:11.5px" onclick="showPage('bim')">📷 Open AR Camera</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECTS ══ -->
+  <div class="ct" id="page-projects">
+    <div class="stitle">Projects</div>
+    <div class="ssub">All projects managed by BIM Management Division</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+      <div class="kbtags"><span class="kbtag active">All</span><span class="kbtag">Ongoing</span><span class="kbtag">Completed</span><span class="kbtag">Bridge</span><span class="kbtag">High-Rise</span></div>
+      <button class="btn btn-p" style="margin-left:auto" onclick="alert('Add New Project...')">+ New Project</button>
+    </div>
+    <div style="font-size:10px;color:var(--tm);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">● Ongoing Projects</div>
+    <div class="g3 mb14">
+      <div class="pc" onclick="showPage('dashboard')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div><div style="font-weight:700;font-size:14px">Djoglo Bridge</div><div style="font-size:11px;color:var(--tm);font-weight:400">🌉 Transportation · Mojokerto</div></div>
+          <span class="badge bpg">32%</span>
+        </div>
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--tm);font-weight:400"><span>Progress</span><span>Week 12/24</span></div><div class="pbar"><div class="pfill" style="width:32%"></div></div></div>
+        <div class="pstats"><div class="ps"><div class="pv" style="color:var(--red)">3</div><div class="lbl">High Risk</div></div><div class="ps"><div class="pv">21</div><div class="lbl">Total Risks</div></div><div class="ps"><div class="pv" style="color:var(--red)">378</div><div class="lbl">Max RPN</div></div><div class="ps"><div class="pv">1.2 GB</div><div class="lbl">BIM</div></div></div>
+      </div>
+      <div class="pc">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div><div style="font-weight:700;font-size:14px">GIK Tower</div><div style="font-size:11px;color:var(--tm);font-weight:400">🏢 High-Rise · Fl. 1–22</div></div>
+          <span class="badge bd">65%</span>
+        </div>
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--tm);font-weight:400"><span>Progress</span><span>Week 36/52</span></div><div class="pbar"><div class="pfill" style="width:65%"></div></div></div>
+        <div class="pstats"><div class="ps"><div class="pv" style="color:var(--yellow)">5</div><div class="lbl">Med Risk</div></div><div class="ps"><div class="pv">34</div><div class="lbl">Total Risks</div></div><div class="ps"><div class="pv">320</div><div class="lbl">Max RPN</div></div><div class="ps"><div class="pv">5.2 GB</div><div class="lbl">BIM</div></div></div>
+      </div>
+      <div class="pc" style="border:2px dashed var(--border);box-shadow:none;background:transparent;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;color:var(--tm)" onclick="alert('Add new project...')">
+        <div style="font-size:30px">+</div>
+        <div style="font-size:13px;font-weight:600">Add New Project</div>
+        <div style="font-size:11px;font-weight:400">Connect BIM from OneDrive</div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--tm);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">✓ Completed Projects</div>
+    <div class="g3">
+      <div class="pc" style="opacity:.72">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div><div style="font-weight:700;font-size:14px">Kaliurang Heritage</div><div style="font-size:11px;color:var(--tm);font-weight:400">🏬 Commercial Facility</div></div>
+          <span class="badge bd">✓ Done</span>
+        </div>
+        <div><div class="pbar"><div class="pfill" style="width:100%;background:#ccc"></div></div></div>
+        <div class="pstats"><div class="ps"><div class="pv" style="color:var(--green)">0</div><div class="lbl">Open Risk</div></div><div class="ps"><div class="pv">18</div><div class="lbl">Resolved</div></div><div class="ps"><div class="pv" style="color:var(--green)">Rp 8.2M</div><div class="lbl">Saved</div></div><div class="ps"><div class="pv">1.5 GB</div><div class="lbl">Archive</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MULTI-PROJECT SUMMARY ══ -->
+  <div class="ct" id="page-summary">
+    <div class="stitle">Multi-Project Risk Overview</div>
+    <div class="ssub">Cross-project risk monitoring · All active & completed projects</div>
+    <div class="krow mb14">
+      <div class="kc r"><div class="kl">Highest RPN (All)</div><div class="kv">378</div><div class="ks">Djoglo Bridge · BR-FD-01</div></div>
+      <div class="kc o"><div class="kl">Total Open Risks</div><div class="kv">28</div><div class="ks">across 2 active projects</div></div>
+      <div class="kc g"><div class="kl">Total Cost Saved</div><div class="kv" style="font-size:18px">Rp 20.6M</div><div class="ks">predictive mitigation YTD</div></div>
+      <div class="kc y"><div class="kl">Avg. Resolution Rate</div><div class="kv">71%</div><div class="ks">all projects combined</div></div>
+    </div>
+    <div class="g2 mb14">
+      <div class="card"><div class="ch"><div class="ct-title">RPN Comparison · All Projects</div></div><canvas id="multiRpnChart" height="210"></canvas></div>
+      <div class="card"><div class="ch"><div class="ct-title">Risk Category Radar</div></div><canvas id="multiCatChart" height="210"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct-title">Project Risk Summary</div><span class="ca">Export →</span></div>
+      <div style="margin-bottom:8px"><div style="display:flex;gap:10px;padding:8px 13px;background:var(--sidebar);border-radius:var(--rs);font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--green-l);font-weight:600">
+        <span style="flex:1.5">Project</span><span style="flex:1">Type</span><span style="flex:.8;text-align:center">Max RPN</span><span style="flex:1.2">Progress</span><span style="flex:.8;text-align:center">High Risks</span><span style="flex:.8;text-align:center">Status</span>
+      </div></div>
+      <div class="srow"><div style="flex:1.5;font-weight:700;font-size:12.5px">Djoglo Bridge – Mojokerto</div><div style="flex:1;font-size:11px;color:var(--tm)">🌉 Transportation</div><div style="flex:.8;text-align:center;font-weight:700;color:var(--red)">378</div><div style="flex:1.2"><div style="font-size:11px;color:var(--tm);margin-bottom:3px">32%</div><div class="pbar" style="height:4px"><div class="pfill" style="width:32%"></div></div></div><div style="flex:.8;text-align:center"><span class="badge bh">3 High</span></div><div style="flex:.8;text-align:center"><span class="badge bpg">Ongoing</span></div></div>
+      <div class="srow"><div style="flex:1.5;font-weight:700;font-size:12.5px">GIK Tower</div><div style="flex:1;font-size:11px;color:var(--tm)">🏢 High-Rise</div><div style="flex:.8;text-align:center;font-weight:700;color:var(--orange)">320</div><div style="flex:1.2"><div style="font-size:11px;color:var(--tm);margin-bottom:3px">65%</div><div class="pbar" style="height:4px"><div class="pfill" style="width:65%"></div></div></div><div style="flex:.8;text-align:center"><span class="badge bm">1 High</span></div><div style="flex:.8;text-align:center"><span class="badge bpg">Ongoing</span></div></div>
+      <div class="srow" style="opacity:.65"><div style="flex:1.5;font-weight:700;font-size:12.5px">Kaliurang Heritage</div><div style="flex:1;font-size:11px;color:var(--tm)">🏬 Commercial</div><div style="flex:.8;text-align:center;font-weight:700;color:var(--green)">80</div><div style="flex:1.2"><div style="font-size:11px;color:var(--tm);margin-bottom:3px">100%</div><div class="pbar" style="height:4px"><div class="pfill" style="width:100%;background:#ccc"></div></div></div><div style="flex:.8;text-align:center"><span class="badge bd">0 High</span></div><div style="flex:.8;text-align:center"><span class="badge bd">✓ Done</span></div></div>
+    </div>
+  </div>
+
+  <!-- ══ RFMEA ══ -->
+  <div class="ct" id="page-rfmea">
+    <div class="stitle">RFMEA Calculator</div>
+    <div class="ssub">Risk Failure Mode & Effect Analysis · Synced from OneDrive Excel · Dynamo-linked</div>
+    <div class="krow mb14">
+      <div class="kc r"><div class="kl">Max RPN</div><div class="kv">500</div><div class="ks">R-007 · East Abutment</div></div>
+      <div class="kc y"><div class="kl">Avg Occurrence</div><div class="kv">2.8</div><div class="ks">across 21 risk entries</div></div>
+      <div class="kc o"><div class="kl">Avg Severity</div><div class="kv">6.2</div><div class="ks">scale 1–10</div></div>
+      <div class="kc g"><div class="kl">Avg Detection</div><div class="kv">4.1</div><div class="ks">detection capability</div></div>
+    </div>
+    <div class="g2 mb14">
+      <div class="card"><div class="ch"><div class="ct-title">Occurrence Distribution</div></div><canvas id="occChart" height="170"></canvas></div>
+      <div class="card"><div class="ch"><div class="ct-title">Severity vs Detection Scatter</div></div><canvas id="sevDetChart" height="170"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct-title">RFMEA Risk Register</div><div class="ct-sub">Synced: /BIM-AR/RFMEA_Djoglo.xlsx · OneDrive · Last sync 09:15</div></div>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-g" onclick="alert('Opening Excel on OneDrive...')">📂 Open Excel</button>
+          <button class="btn btn-p" onclick="alert('Syncing...')">⟳ Sync</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rfmt">
+          <thead><tr><th>Risk ID</th><th>WBS</th><th>Zone</th><th>Category</th><th>Risk Description</th><th>Cause</th><th>Effect</th><th style="text-align:center">O</th><th style="text-align:center">S</th><th style="text-align:center">D</th><th style="text-align:center">RPN</th><th>Level</th><th>Control</th><th>Owner</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>R-007</code></td><td><code>D-ABT.008</code></td><td>East</td><td>Structural</td><td>East Abutment structural delay</td><td>Geotechnical uncertainty</td><td>Schedule overrun</td><td class="num">1</td><td class="num">10</td><td class="num">5</td><td class="num"><span class="rpnc rph">500</span></td><td><span class="badge bh">High</span></td><td>Assessed/Evaluated</td><td>Ms. Nandhita</td><td><span class="badge bp">Pending</span></td></tr>
+            <tr><td><code>R-013</code></td><td><code>D13-PL</code></td><td>Ground</td><td>Piling</td><td>D13-Pile schedule deviation</td><td>Equipment delay</td><td>Critical path</td><td class="num">4</td><td class="num">8</td><td class="num">4</td><td class="num"><span class="rpnc rph">256</span></td><td><span class="badge bh">High</span></td><td>Mitigation in progress</td><td>Mr. Ghiffari</td><td><span class="badge bpg">On Progress</span></td></tr>
+            <tr><td><code>R-004</code></td><td><code>D-DW.002</code></td><td>West</td><td>Quality</td><td>Diaphragm wall casting quality</td><td>Mix design deviation</td><td>Rework cost</td><td class="num">3</td><td class="num">7</td><td class="num">5</td><td class="num"><span class="rpnc rpm">105</span></td><td><span class="badge bm">Medium</span></td><td>QC sampling increased</td><td>Site QC</td><td><span class="badge bpg">On Progress</span></td></tr>
+            <tr><td><code>R-002</code></td><td><code>AB01-GB</code></td><td>Central</td><td>Tolerance</td><td>Girder beam alignment tolerance</td><td>Fabrication variance</td><td>Installation rework</td><td class="num">2</td><td class="num">6</td><td class="num">4</td><td class="num"><span class="rpnc rpm">48</span></td><td><span class="badge bm">Medium</span></td><td>AR-verified alignment</td><td>Mr. Axsyal</td><td><span class="badge bd">Mitigated</span></td></tr>
+            <tr><td><code>R-009</code></td><td><code>WW-EW</code></td><td>East</td><td>Structural</td><td>Wingwall rebar coverage</td><td>Formwork displacement</td><td>Durability</td><td class="num">2</td><td class="num">5</td><td class="num">4</td><td class="num"><span class="rpnc rpl">40</span></td><td><span class="badge bl">Low</span></td><td>Rebar inspection</td><td>Site QC</td><td><span class="badge bd">Resolved</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ KNOWLEDGE BASE ══ -->
+  <div class="ct" id="page-knowledge">
+    <div class="stitle">Knowledge Base</div>
+    <div class="ssub">BIM-RFMEA Historical Risk Dataset · Bridge Construction (Perning Kloji Framework) · 44 Records across 9 Phases</div>
+
+    <!-- Filters -->
+    <div class="card mb14">
+      <div class="ch" style="margin-bottom:10px"><div class="ct-title">Filter & Search</div><span class="ca" id="kb-clear" onclick="kbClearFilters()">Clear filters</span></div>
+      <div class="kbf-row">
+        <div class="kbf-group">
+          <div class="kbf-label">Construction Phase</div>
+          <div class="kbtags" id="phase-tags">
+            <span class="kbtag active" data-phase="all" onclick="kbFilter('phase','all',this)">All Phases</span>
+            <span class="kbtag" data-phase="Foundation" onclick="kbFilter('phase','Foundation',this)">🏚 Foundation</span>
+            <span class="kbtag" data-phase="Pile Cap" onclick="kbFilter('phase','Pile Cap',this)">📦 Pile Cap</span>
+            <span class="kbtag" data-phase="Abutment" onclick="kbFilter('phase','Abutment',this)">🧱 Abutment</span>
+            <span class="kbtag" data-phase="Retaining Wall" onclick="kbFilter('phase','Retaining Wall',this)">🔧 Retaining Wall</span>
+            <span class="kbtag" data-phase="Girder Erection" onclick="kbFilter('phase','Girder Erection',this)">🏗 Girder Erection</span>
+            <span class="kbtag" data-phase="Deck Slab" onclick="kbFilter('phase','Deck Slab',this)">🟫 Deck Slab</span>
+            <span class="kbtag" data-phase="Formwork" onclick="kbFilter('phase','Formwork',this)">🪵 Formwork</span>
+            <span class="kbtag" data-phase="Reinforcement" onclick="kbFilter('phase','Reinforcement',this)">🔩 Reinforcement</span>
+            <span class="kbtag" data-phase="Equipment & Logistics" onclick="kbFilter('phase','Equipment & Logistics',this)">🚧 Equipment</span>
+          </div>
+        </div>
+        <div class="kbf-group">
+          <div class="kbf-label">Risk Level</div>
+          <div class="kbtags" id="level-tags">
+            <span class="kbtag active" data-level="all" onclick="kbFilter('level','all',this)">All Levels</span>
+            <span class="kbtag" data-level="HIGH" onclick="kbFilter('level','HIGH',this)" style="border-color:#E53E3E;color:#E53E3E">🔴 High</span>
+            <span class="kbtag" data-level="MEDIUM" onclick="kbFilter('level','MEDIUM',this)" style="border-color:#F5C842;color:#92400E">🟡 Medium</span>
+            <span class="kbtag" data-level="LOW" onclick="kbFilter('level','LOW',this)" style="border-color:#3DB54A;color:#2A8C35">🟢 Low</span>
+          </div>
+        </div>
+        <div class="kbf-group">
+          <div class="kbf-label">Cost Impact</div>
+          <div class="kbtags" id="cost-tags">
+            <span class="kbtag active" data-cost="all" onclick="kbFilter('cost','all',this)">All</span>
+            <span class="kbtag" data-cost="High" onclick="kbFilter('cost','High',this)">High Cost</span>
+            <span class="kbtag" data-cost="Medium" onclick="kbFilter('cost','Medium',this)">Medium Cost</span>
+            <span class="kbtag" data-cost="Low" onclick="kbFilter('cost','Low',this)">Low Cost</span>
+          </div>
+        </div>
+      </div>
+      <input class="searchbar" type="text" placeholder="🔍  Search by Risk ID, name, work element, cause, or mitigation plan..." id="kb-search" oninput="kbRender()">
+    </div>
+
+    <div class="g2 mb14">
+      <div class="card"><div class="ch"><div class="ct-title">RPN Distribution by Phase</div></div><canvas id="kbPhaseChart" height="180"></canvas></div>
+      <div class="card"><div class="ch"><div class="ct-title">Avg Delay by Phase (days)</div></div><canvas id="kbDelayChart" height="180"></canvas></div>
+    </div>
+
+    <!-- KB Count -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:11.5px;font-weight:600;color:var(--t2)">Showing <span id="kb-count">44</span> of 44 records</div>
+      <div style="font-size:11px;color:var(--tm);font-weight:400">Click a row to view full detail</div>
+    </div>
+
+    <!-- KB Table -->
+    <div class="kbwrap">
+      <table class="kbt" id="kb-table">
+        <thead>
+          <tr>
+            <th style="min-width:90px">Risk ID</th>
+            <th style="min-width:220px">Risk Name</th>
+            <th style="min-width:140px">Work Element</th>
+            <th style="min-width:110px">Phase</th>
+            <th style="min-width:80px;text-align:center">Hist. Freq.</th>
+            <th style="min-width:80px;text-align:center">Avg Delay</th>
+            <th style="min-width:40px;text-align:center">S</th>
+            <th style="min-width:40px;text-align:center">O</th>
+            <th style="min-width:40px;text-align:center">D</th>
+            <th style="min-width:70px;text-align:center">RPN</th>
+            <th style="min-width:75px">Risk Level</th>
+            <th style="min-width:90px">Cost Impact</th>
+            <th style="min-width:130px">Safety Impact</th>
+            <th style="min-width:200px">Mitigation Plan</th>
+            <th style="min-width:80px;text-align:center">Max Delay</th>
+          </tr>
+        </thead>
+        <tbody id="kb-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ BIM VIEWER ══ -->
+  <div class="ct" id="page-bim">
+    <div class="stitle">BIM-AR Viewer</div>
+    <div class="ssub">Revit model mirror · Color-coded via Dynamo · 3D Model View</div>
+
+    <!-- 3D Viewer Full Width -->
+    <div class="card mb14" style="padding:0;overflow:hidden;position:relative;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);">
+        <div>
+          <div class="ct-title">3D Model Viewer · Djoglo Bridge</div>
+          <div class="ct-sub">IFC Loaded · Color-coded via Dynamo · Klik elemen untuk detail</div>
+        </div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <span style="font-size:10px;color:var(--green);font-weight:600;background:var(--green-pale);padding:3px 9px;border-radius:20px;">🟢 Model Aktif</span>
+          <button class="btn btn-g" style="font-size:10.5px" onclick="bim3dReset()">↺ Reset View</button>
+          <button class="btn btn-g" style="font-size:10.5px" onclick="bim3dToggleWire()">⬡ Wireframe</button>
+          <button class="btn btn-p" style="font-size:10.5px" onclick="alert('Export IFC...')">⬇ Export IFC</button>
+        </div>
+      </div>
+      <div style="background:#0D1B0F;position:relative;height:420px;overflow:hidden;">
+        <canvas id="bim3dCanvas" style="width:100%;height:100%;display:block;cursor:grab;"></canvas>
+        <div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:5px;z-index:3;">
+          <div class="bcb" onclick="bim3dZoom(1.15)">+</div>
+          <div class="bcb" onclick="bim3dZoom(0.87)">−</div>
+          <div class="bcb" onclick="bim3dRotate(-15)">◁</div>
+          <div class="bcb" onclick="bim3dRotate(15)">▷</div>
+          <div class="bcb" onclick="bim3dTiltUp()">△</div>
+          <div class="bcb" onclick="bim3dReset()">⌂</div>
+        </div>
+        <div class="bimleg" style="bottom:12px;left:12px;">
+          <div class="bll"><div class="bld" style="background:#E53E3E"></div>TINGGI &gt;350</div>
+          <div class="bll"><div class="bld" style="background:#F0844C"></div>MEDIUM 125–350</div>
+          <div class="bll"><div class="bld" style="background:#F5C842"></div>RENDAH 30–124</div>
+          <div class="bll"><div class="bld" style="background:#3DB54A"></div>TIDAK ADA &lt;30</div>
+        </div>
+        <div class="bimbadge" style="top:12px;left:12px;">🔷 3D VIEW · 7°46′12″S 110°23′3″E</div>
+        <div id="bim3d-tooltip" style="display:none;position:absolute;background:rgba(15,26,16,.93);border:1px solid rgba(61,181,74,.3);border-radius:7px;padding:8px 12px;color:#fff;font-size:11px;pointer-events:none;z-index:10;backdrop-filter:blur(6px);min-width:150px;"></div>
+      </div>
+    </div>
+
+    <div class="g2 mb14">
+      <div class="card">
+        <div class="ch"><div><div class="ct-title" id="sel-title">Selected · East Abutment – ABT.008</div><div class="ct-sub">Klik elemen 3D untuk memilih</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+          <div class="pdr"><span class="pdl">Risk ID</span><span class="pdv" id="sel-rid">R-007</span></div>
+          <div class="pdr"><span class="pdl">RPN</span><span class="pdv" id="sel-rpn" style="color:var(--red)">500</span></div>
+          <div class="pdr"><span class="pdl">Occurrence</span><span class="pdv" id="sel-o">1.0</span></div>
+          <div class="pdr"><span class="pdl">Severity</span><span class="pdv" id="sel-s">10.0</span></div>
+          <div class="pdr" style="grid-column:1/-1"><span class="pdl">Detection</span><span class="pdv" id="sel-d">5.0</span></div>
+          <div class="pdr" style="grid-column:1/-1"><span class="pdl">Status</span><span class="pdv" id="sel-status"><span class="badge bp">Pending</span></span></div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:7px;">
+          <button class="btn btn-p" style="flex:1" onclick="alert('Recording...')">📸 Record</button>
+          <button class="btn btn-g" style="flex:1" onclick="alert('Feedback...')">💬 Feedback</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div><div class="ct-title">Dynamo Integration</div><div class="ct-sub">Python script · OneDrive Excel ↔ Revit color mapping</div></div></div>
+        <div style="background:#0F1A10;border-radius:8px;padding:13px;font-family:'Courier New',monospace;font-size:10.5px;color:#7EE8A2;line-height:1.9;overflow-x:auto;">
+          <span style="color:#6A8C6B"># Dynamo – RPN Color Override via OneDrive</span><br>
+          <span style="color:#A8D8A8">import</span> clr<br>
+          clr.AddReference(<span style="color:#86EFAC">'RevitAPI'</span>)<br>
+          <span style="color:#A8D8A8">from</span> Autodesk.Revit.DB <span style="color:#A8D8A8">import</span> *<br>
+          rpn_data = read_excel(<span style="color:#86EFAC">"OneDrive/RFMEA_Djoglo.xlsx"</span>)<br>
+          <span style="color:#A8D8A8">for</span> element <span style="color:#A8D8A8">in</span> elements:<br>
+          &nbsp;&nbsp;rpn = rpn_data[element.Id]<br>
+          &nbsp;&nbsp;<span style="color:#A8D8A8">if</span> rpn > <span style="color:#86EFAC">200</span>: color = RED<br>
+          &nbsp;&nbsp;<span style="color:#A8D8A8">elif</span> rpn > <span style="color:#86EFAC">80</span>: color = YELLOW<br>
+          &nbsp;&nbsp;<span style="color:#A8D8A8">else</span>: color = GREEN<br>
+          &nbsp;&nbsp;override_color(element, color)
+        </div>
+        <div style="margin-top:9px;display:flex;gap:7px;">
+          <button class="btn btn-g" onclick="alert('Running Dynamo...')">▶ Run Script</button>
+          <button class="btn btn-g" onclick="alert('Opening OneDrive...')">📂 Excel Source</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INBOX ══ -->
+  <div class="ct" id="page-inbox">
+    <div class="stitle">Inbox</div>
+    <div class="ssub">Risk notifications, team messages, and action items</div>
+    <div class="g21">
+      <div>
+        <div class="itabs"><div class="itab active">Pending (3)</div><div class="itab">In Review (2)</div><div class="itab">Resolved (8)</div></div>
+        <div class="iitem high-risk">
+          <div style="display:flex;align-items:center;justify-content:space-between"><div><div class="is">Ms. Nandhita</div><div class="ir">Risk Manager · Djoglo Bridge</div></div><div class="it">Today, 09:15</div></div>
+          <div class="im">@You tagged for follow up on <strong>East-Abutment</strong> critical delay – immediate mitigation required.</div>
+          <div class="imeta"><span class="badge bh">High Risk</span><span class="badge bp">Action Required</span><button class="btn btn-p" style="margin-left:auto;font-size:10.5px;padding:5px 11px" onclick="alert('Upload photo...')">📸 Upload</button></div>
+        </div>
+        <div class="iitem unread">
+          <div style="display:flex;align-items:center;justify-content:space-between"><div><div class="is">Mr. Ghiffari</div><div class="ir">BIM Modeler · GIK Tower</div></div><div class="it">Yesterday, 13:30</div></div>
+          <div class="im">Feedback submitted on WBS D13-Pile. Schedule deviation noted – validate in BIM file 13.04 AR before MEP.</div>
+          <div class="imeta"><span class="badge bpg">Modeling Risk</span><button class="btn btn-g" style="margin-left:auto;font-size:10.5px;padding:5px 11px;color:var(--red);border-color:var(--red)" onclick="alert('Reviewing...')">Review</button></div>
+        </div>
+        <div class="iitem unread">
+          <div style="display:flex;align-items:center;justify-content:space-between"><div><div class="is">Ms. Masyhta</div><div class="ir">Risk Analyst · Djoglo Bridge</div></div><div class="it">Yesterday, 12:35</div></div>
+          <div class="im">Risk Detected – D13-Pile is Delayed. RPN updated 180 → 256. Please review and confirm mitigation action.</div>
+          <div class="imeta"><span class="badge bm">Recalculated</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="card mb14">
+          <div class="ch"><div class="ct-title">Quick Stats</div></div>
+          <div class="pdr"><span class="pdl">Unread</span><span class="pdv" style="color:var(--red)">3</span></div>
+          <div class="pdr"><span class="pdl">Action Required</span><span class="pdv" style="color:var(--orange)">1</span></div>
+          <div class="pdr"><span class="pdl">In Review</span><span class="pdv">2</span></div>
+          <div class="pdr"><span class="pdl">Resolved (30d)</span><span class="pdv" style="color:var(--green)">8</span></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct-title">Team Members</div></div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;align-items:center;gap:9px"><div class="ua" style="background:linear-gradient(135deg,#E53E3E,#C53030)">NN</div><div><div style="font-weight:600;font-size:12px">Ms. Nandhita</div><div style="font-size:10px;color:var(--tm);font-weight:400">Risk Manager</div></div><div class="dot" style="margin-left:auto"></div></div>
+            <div style="display:flex;align-items:center;gap:9px"><div class="ua" style="background:linear-gradient(135deg,#3182CE,#2B6CB0)">GH</div><div><div style="font-weight:600;font-size:12px">Mr. Ghiffari</div><div style="font-size:10px;color:var(--tm);font-weight:400">BIM Modeler</div></div><div class="dot" style="margin-left:auto;background:#ccc"></div></div>
+            <div style="display:flex;align-items:center;gap:9px"><div class="ua" style="background:linear-gradient(135deg,#9B59B6,#8E44AD)">MS</div><div><div style="font-weight:600;font-size:12px">Ms. Masyhta</div><div style="font-size:10px;color:var(--tm);font-weight:400">Risk Analyst</div></div><div class="dot" style="margin-left:auto"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROFILE ══ -->
+  <div class="ct" id="page-profile">
+    <div class="stitle">Account Profile</div>
+    <div class="ssub">ADH-2023-00054 · BIM Management · adhi.cons</div>
+    <div class="phdr">
+      <div class="pav">AA</div>
+      <div class="pinfo"><div class="pn">Mr. Axsyal Aditya</div><div class="pr">BIM Manager · Executive Account</div><div class="pe">ADH-2023-00054 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1d7c656e645d707c7471337c7975747e72736e69337c7e337479">[email&#160;protected]</a></div></div>
+      <div class="pstats2"><div class="pstat2"><div class="v">2</div><div class="l">Active Projects</div></div><div class="pstat2"><div class="v">5</div><div class="l">All Projects</div></div><div class="pstat2"><div class="v">71%</div><div class="l">Resolution Rate</div></div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct-title">Account Data</div><span class="ca">Edit</span></div>
+        <div class="pdr"><span class="pdl">Employee ID</span><span class="pdv" style="font-family:'Courier New',monospace;font-size:11.5px">ADH-2023-00054</span></div>
+        <div class="pdr"><span class="pdl">Email</span><span class="pdv"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="52332a212b123f333b3e7c33363a3b313d3c21267c33317c3b36">[email&#160;protected]</a></span></div>
+        <div class="pdr"><span class="pdl">Division</span><span class="pdv">BIM Management</span></div>
+        <div class="pdr"><span class="pdl">Role</span><span class="pdv">Executive Account</span></div>
+        <div class="pdr"><span class="pdl">Company</span><span class="pdv">adhi.cons</span></div>
+        <div class="pdr"><span class="pdl">Last Login</span><span class="pdv">Today, 14:03</span></div>
+        <div class="pdr"><span class="pdl">Status</span><span class="pdv"><span class="badge bd">● Online</span></span></div>
+      </div>
+      <div>
+        <div class="card mb14">
+          <div class="ch"><div class="ct-title">Access & Permissions</div></div>
+          <div class="pdr"><span class="pdl">Power BI</span><span class="badge bd">✓ Connected</span></div>
+          <div class="pdr"><span class="pdl">OneDrive Sync</span><span class="badge bd">✓ Active</span></div>
+          <div class="pdr"><span class="pdl">Revit / Dynamo</span><span class="badge bd">✓ Linked</span></div>
+          <div class="pdr"><span class="pdl">AR Mobile App</span><span class="badge bd">✓ Paired</span></div>
+          <div class="pdr"><span class="pdl">Database</span><span class="badge bd">Full Access</span></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct-title">Settings</div></div>
+          <div class="pdr"><span class="pdl">Notifications</span><span class="badge bd">Enabled</span></div>
+          <div class="pdr"><span class="pdl">Sync Frequency</span><span class="pdv">Every 15 min</span></div>
+          <div class="pdr"><span class="pdl">Language</span><span class="pdv">Bahasa / EN</span></div>
+          <div style="margin-top:10px"><button class="btn btn-g" style="width:100%">🔓 Change Password</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- KB DETAIL MODAL -->
+<div class="modal-overlay" id="kb-modal" onclick="closeModal(event)">
+  <div class="modal" id="kb-modal-content">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:11px;color:var(--tm);font-weight:600;text-transform:uppercase;letter-spacing:.06em" id="modal-id"></div>
+        <div style="font-weight:800;font-size:16px;margin-top:3px" id="modal-name"></div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('kb-modal').classList.remove('show')">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── NAV ──
+const pages = {
+  dashboard:['Risk Dashboard','Djoglo Bridge · Mojokerto · Week 12 of 24'],
+  projects:['Projects','All projects · BIM Management Division'],
+  summary:['Multi-Project Overview','Cross-project risk monitoring'],
+  rfmea:['RFMEA Calculator','Synced from OneDrive Excel · Dynamo-linked'],
+  knowledge:['Knowledge Base','Historical risk data · Bridge Construction · 44 Records'],
+  bim:['BIM-AR Viewer','Revit model · Color-coded via Dynamo · AR overlay'],
+  inbox:['Inbox','3 unread · 1 action required'],
+  profile:['Account Profile','ADH-2023-00054 · BIM Management']
+};
+const navOrder=['dashboard','projects','summary','rfmea','knowledge','bim','inbox','profile'];
+function showPage(id){
+  document.querySelectorAll('.ct').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('tb-title').textContent=pages[id][0];
+  document.getElementById('tb-bc').textContent=pages[id][1];
+  const idx=navOrder.indexOf(id);
+  document.querySelectorAll('.ni')[idx]?.classList.add('active');
+}
+
+// ── CHARTS ──
+const G='#3DB54A',Y='#F5C842',O='#F0844C',R='#E53E3E',gc='rgba(0,0,0,.05)';
+const fo={family:"'Poppins',sans-serif",size:10};
+
+// RPN
+new Chart(document.getElementById('rpnChart'),{type:'bar',data:{labels:['R-007','R-013','R-004','R-002','R-018','R-009','R-011','R-015'],datasets:[{data:[500,256,105,48,45,40,36,24],backgroundColor:[R,R,O,Y,Y,G,G,G],borderRadius:5,borderSkipped:false}]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{font:fo,color:'#9CAA9E'}},y:{grid:{display:false},ticks:{font:fo,color:'#5A6B5C'}}}}});
+
+// Level pie
+new Chart(document.getElementById('riskLevelChart'),{type:'doughnut',data:{labels:['High (10%)','Medium (20%)','Low (35%)','Resolved (35%)'],datasets:[{data:[10,20,35,35],backgroundColor:[R,O,Y,G],borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'65%',plugins:{legend:{display:true,position:'right',labels:{font:fo,color:'#5A6B5C',padding:10,usePointStyle:true}}}}});
+
+// S-curve
+const wks=Array.from({length:25},(_,i)=>'Wk'+i);
+new Chart(document.getElementById('scurveChart'),{type:'line',data:{labels:wks,datasets:[{label:'Planned',data:[0,1,2,4,7,11,16,21,27,33,39,45,52,58,64,70,76,81,86,90,93,95,97,99,100],borderColor:'#9CAA9E',borderDash:[5,3],borderWidth:2,pointRadius:0,tension:.4,fill:false},{label:'Actual',data:[0,1,2,4,7,11,16,21,27,33,39,46,null,null,null,null,null,null,null,null,null,null,null,null,null],borderColor:G,borderWidth:2.5,pointRadius:3,pointBackgroundColor:G,tension:.4,fill:false},{label:'Forecast',data:[null,null,null,null,null,null,null,null,null,null,null,46,53,59,65,70,75,80,84,88,92,95,97,99,100],borderColor:G,borderDash:[4,4],borderWidth:2,pointRadius:0,tension:.4,fill:false}]},options:{responsive:true,plugins:{legend:{display:true,position:'top',labels:{font:fo,color:'#5A6B5C',usePointStyle:true,padding:10}}},scales:{x:{grid:{color:gc},ticks:{font:{family:"'Poppins',sans-serif",size:8},color:'#9CAA9E',maxTicksLimit:8}},y:{grid:{color:gc},ticks:{font:fo,color:'#9CAA9E',callback:v=>v+'%'},min:0,max:100}}}});
+
+// Status
+new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:['Resolved (14)','On Progress (4)','Pending (2)','Monitoring (1)'],datasets:[{data:[14,4,2,1],backgroundColor:[G,O,R,Y],borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'65%',plugins:{legend:{display:true,position:'right',labels:{font:fo,color:'#5A6B5C',padding:10,usePointStyle:true}}}}});
+
+// Multi
+new Chart(document.getElementById('multiRpnChart'),{type:'bar',data:{labels:['BR-FD-01\nDjoglo','R-013\nDjoglo','Tower-R08\nGIK','R-004\nDjoglo','Tower-R12\nGIK'],datasets:[{data:[378,256,320,105,180],backgroundColor:[R,O,R,O,Y],borderRadius:5,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:fo,color:'#9CAA9E'}},y:{grid:{color:gc},ticks:{font:fo,color:'#9CAA9E'}}}}});
+
+new Chart(document.getElementById('multiCatChart'),{type:'radar',data:{labels:['Structural','Schedule','Quality','Geotechnical','Cost','Safety','Equipment'],datasets:[{label:'Djoglo Bridge',data:[8,6,4,5,3,2,3],borderColor:G,backgroundColor:'rgba(61,181,74,.1)',borderWidth:2,pointBackgroundColor:G},{label:'GIK Tower',data:[4,5,7,2,6,4,5],borderColor:O,backgroundColor:'rgba(240,132,76,.1)',borderWidth:2,pointBackgroundColor:O}]},options:{responsive:true,plugins:{legend:{display:true,position:'top',labels:{font:fo,color:'#5A6B5C',usePointStyle:true}}},scales:{r:{ticks:{display:false},grid:{color:gc},pointLabels:{font:fo,color:'#5A6B5C'}}}}});
+
+// RFMEA charts
+new Chart(document.getElementById('occChart'),{type:'bar',data:{labels:['1','2','3','4','5','6','7','8','9','10'],datasets:[{label:'Risk Count',data:[3,6,4,3,2,1,1,0,0,1],backgroundColor:G,borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:fo,color:'#9CAA9E'}},y:{grid:{color:gc},ticks:{font:fo,color:'#9CAA9E'}}}}});
+
+new Chart(document.getElementById('sevDetChart'),{type:'scatter',data:{datasets:[{label:'High RPN (>200)',data:[{x:10,y:5},{x:8,y:4}],backgroundColor:R,pointRadius:8},{label:'Medium',data:[{x:7,y:5},{x:6,y:4},{x:7,y:3}],backgroundColor:O,pointRadius:6},{label:'Low',data:[{x:5,y:4},{x:4,y:3},{x:3,y:2}],backgroundColor:G,pointRadius:5}]},options:{responsive:true,plugins:{legend:{display:true,position:'top',labels:{font:fo,color:'#5A6B5C',usePointStyle:true}}},scales:{x:{grid:{color:gc},min:0,max:11,ticks:{font:fo},title:{display:true,text:'Severity (S)',font:{size:10,family:"'Poppins',sans-serif"},color:'#9CAA9E'}},y:{grid:{color:gc},min:0,max:11,ticks:{font:fo},title:{display:true,text:'Detection (D)',font:{size:10,family:"'Poppins',sans-serif"},color:'#9CAA9E'}}}}});
+
+// ── KNOWLEDGE BASE DATA ──
+const KB_DATA = [{"Risk_ID":"BR-FD-01","Risk_Name":"Pile Bearing Capacity Failure","Work_Element":"Foundation \u2013 Driven Pile","Phase":"Foundation","Cause":"Heterogeneous alluvial/soft soil; premature driving termination; inadequate SPT data","Time_Impact":"14\u201328 day redesign + re-drive","Cost_Impact_Level":"High","Safety_Impact":"Structural collapse risk","Hist_Freq":0.12,"Avg_Delay":21.0,"Severity_S":9,"Occurrence_O":7,"Detection_D":6,"RPN":378,"Risk_Level":"HIGH","Mitigation_Effectiveness":"Moderate \u2013 dynamic load test (CAPWAP) reduces consequence, not likelihood","Mitigation_Plan":"Dynamic load test (CAPWAP) on \u22655% of piles; inclinometer at pile cap; BIM pile-tip elevation update","Historical_Behaviour_Notes":"Occurs in ~12% of bridge projects on soft/alluvial soils (FHWA 2019). Average delay 3 weeks. Major cost driver for pile-intensive bridges.","Max_Allowable_Delay":"\u2264 3 days"},{"Risk_ID":"BR-FD-02","Risk_Name":"Excessive Pile Deviation (Verticality)","Work_Element":"Foundation \u2013 Driven Pile","Phase":"Foundation","Cause":"Boulder obstruction; misaligned hammer guide; operator error; inadequate pre-bore","Time_Impact":"7\u201314 day extraction & repositioning","Cost_Impact_Level":"High","Safety_Impact":"Worker injury risk during extraction","Hist_Freq":0.18,"Avg_Delay":10.0,"Severity_S":8,"Occurrence_O":6,"Detection_D":7,"RPN":336,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 real-time inclinometer on pile guide reduces deviation by 60\u201370%","Mitigation_Plan":"Real-time inclinometer on pile guide; BIM geometric tolerance alert (\u00b175 mm)","Historical_Behaviour_Notes":"18% frequency in urban/cobble-rich sites. Tolerance typically \u00b175 mm lateral. Extraction adds significant cost.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FD-03","Risk_Name":"Groundwater Ingress During Excavation","Work_Element":"Foundation \u2013 Pile Cap","Phase":"Foundation","Cause":"High water table in riparian zone; dewatering pump undersizing; cofferdam seal failure","Time_Impact":"3\u20137 day stop for dewatering upgrade","Cost_Impact_Level":"Medium","Safety_Impact":"Drowning/confined space hazard","Hist_Freq":0.25,"Avg_Delay":5.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":5,"RPN":175,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 piezometers + redundant pump reduces risk significantly","Mitigation_Plan":"Piezometers prior to excavation; 150% redundant pump capacity; low W/C ratio concrete","Historical_Behaviour_Notes":"Frequent in river-adjacent sites (25% of cases). Short delays but concrete quality risk is serious.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FD-04","Risk_Name":"Negative Skin Friction (Downdrag) on Long Piles","Work_Element":"Foundation \u2013 Driven Pile","Phase":"Foundation","Cause":"Consolidating soft clay layer above bearing stratum; fill placed after piling","Time_Impact":"Remediation: 4\u20138 weeks pile jacketing","Cost_Impact_Level":"High","Safety_Impact":"Long-term settlement, structural failure","Hist_Freq":0.08,"Avg_Delay":30.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":8,"RPN":256,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Low \u2013 difficult to detect post-construction; bitumen coating pre-construction is effective","Mitigation_Plan":"Bitumen coating pre-construction; settlement cells at pile head; BIM monitoring overlay","Historical_Behaviour_Notes":"Affects ~8% of bridges on reclaimed land. Long latency makes detection difficult. Average remediation 5 weeks.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FD-05","Risk_Name":"Concrete Segregation in Bored Pile (Tremie Method)","Work_Element":"Foundation \u2013 Bored Pile","Phase":"Foundation","Cause":"Tremie pipe withdrawal too fast; concrete slump loss; contamination from groundwater","Time_Impact":"Core sampling + grouting: 5\u201310 days","Cost_Impact_Level":"High","Safety_Impact":"Structural deficiency in pile shaft","Hist_Freq":0.1,"Avg_Delay":8.0,"Severity_S":8,"Occurrence_O":5,"Detection_D":6,"RPN":240,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 continuous tremie monitoring and mix design QC reduces by ~75%","Mitigation_Plan":"Continuous tremie monitoring; CSL testing; BIM pile record with pour log","Historical_Behaviour_Notes":"10% incidence in wet bored piling. CSL (cross-hole sonic logging) can detect but adds cost.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FD-06","Risk_Name":"Pile Cap Formwork Failure Under Wet Concrete Load","Work_Element":"Pile Cap","Phase":"Pile Cap","Cause":"Inadequate shoring design; substandard timber props; premature stripping","Time_Impact":"Collapse cleanup + re-pour: 7\u201314 days","Cost_Impact_Level":"High","Safety_Impact":"Fatality risk from formwork collapse","Hist_Freq":0.07,"Avg_Delay":10.0,"Severity_S":9,"Occurrence_O":4,"Detection_D":5,"RPN":180,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 engineered formwork design + third-party inspection eliminates most events","Mitigation_Plan":"PE-stamped formwork design; third-party inspection before pour; BIM formwork clash check","Historical_Behaviour_Notes":"7% frequency globally. Formwork collapse is the leading cause of fatalities in bridge foundations.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FD-07","Risk_Name":"Pile Cap Rebar Placement Error","Work_Element":"Pile Cap","Phase":"Pile Cap","Cause":"Wrong bar diameter or spacing; missing stirrups; inadequate cover (< 75 mm for marine exposure)","Time_Impact":"Partial demolition + re-bar: 3\u20135 days","Cost_Impact_Level":"Medium","Safety_Impact":"Corrosion-induced long-term failure","Hist_Freq":0.15,"Avg_Delay":4.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":4,"RPN":140,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 BIM rebar shop drawing + AR overlay reduces to near zero","Mitigation_Plan":"BIM rebar shop drawing; AR cover overlay on site; pre-pour inspection sign-off","Historical_Behaviour_Notes":"15% frequency \u2013 most common QC non-conformance. Usually caught at pre-pour inspection.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-AB-01","Risk_Name":"Abutment Differential Settlement Causing Bearing Misalignment","Work_Element":"Abutment","Phase":"Abutment","Cause":"Uneven pile cap loading sequence; soft pocket below pile cap; one-sided surcharge from backfill","Time_Impact":"Bearing shimming / re-survey: 7\u201314 days","Cost_Impact_Level":"High","Safety_Impact":"Girder eccentricity, bearing failure","Hist_Freq":0.1,"Avg_Delay":12.0,"Severity_S":9,"Occurrence_O":5,"Detection_D":7,"RPN":315,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Moderate \u2013 settlement monitoring reduces consequence but not cause","Mitigation_Plan":"Settlement monitoring benchmarks; BIM 4D clash detection; AR bearing pad positioning","Historical_Behaviour_Notes":"10% of girder bridges experience >10 mm differential settlement pre-erection. Critical path impact.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-AB-02","Risk_Name":"Abutment Concrete Below Design Strength (fc' < 25 MPa)","Work_Element":"Abutment","Phase":"Abutment","Cause":"Excess water addition on site; improper curing (< 7 days wet cure); high ambient temperature","Time_Impact":"Core test + partial demolition: 14\u201321 days","Cost_Impact_Level":"High","Safety_Impact":"Structural capacity deficiency","Hist_Freq":0.08,"Avg_Delay":18.0,"Severity_S":9,"Occurrence_O":4,"Detection_D":6,"RPN":216,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 embedded temperature sensors + automated curing regime prevents ~85% of cases","Mitigation_Plan":"Embedded temperature sensor; automated curing log in BIM; core samples at 7/14/28 days","Historical_Behaviour_Notes":"8% incidence. Cube tests at 28 days often reveal non-conformance after critical path has advanced.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-AB-03","Risk_Name":"Abutment Wing Wall Cracking (Shrinkage / Thermal)","Work_Element":"Abutment","Phase":"Abutment","Cause":"Rapid surface drying; no construction joints at > 6 m spacing; high-cement content mix","Time_Impact":"Crack injection grouting: 2\u20134 days","Cost_Impact_Level":"Low","Safety_Impact":"Durability concern, water ingress","Hist_Freq":0.22,"Avg_Delay":3.0,"Severity_S":5,"Occurrence_O":6,"Detection_D":4,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 fiber-reinforced concrete + construction joints reduces by 80%","Mitigation_Plan":"PP fiber-reinforced concrete; construction joints at \u22646 m; insulated blanket curing","Historical_Behaviour_Notes":"22% frequency \u2013 most common abutment defect but usually cosmetic. Crack width > 0.3 mm triggers remediation.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-AB-04","Risk_Name":"Abutment Backfill Inadequate Compaction","Work_Element":"Abutment","Phase":"Abutment","Cause":"Compaction in lifts > 300 mm; moisture content outside OMC \u00b1 2%; inadequate equipment access","Time_Impact":"Backfill removal + re-compact: 4\u20137 days","Cost_Impact_Level":"Low","Safety_Impact":"Approach slab settlement, pavement failure","Hist_Freq":0.2,"Avg_Delay":5.0,"Severity_S":6,"Occurrence_O":5,"Detection_D":4,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 nuclear density test every 500 m\u00b2 per lift catches 95% of under-compaction","Mitigation_Plan":"Nuclear density test every 500 m\u00b2; BIM GIS-tagged compaction results per zone","Historical_Behaviour_Notes":"20% of approach roads show distress within 2 years from poor compaction. Insidious \u2013 appears post-handover.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-AB-05","Risk_Name":"Abutment Formwork Deflection Causing Geometric Non-Conformance","Work_Element":"Abutment","Phase":"Abutment","Cause":"Underestimated wet concrete pressure; inadequate tie rod spacing; form panel joint gaps","Time_Impact":"Survey + patching / realignment: 3\u20135 days","Cost_Impact_Level":"Medium","Safety_Impact":"Dimensional non-conformance; BIM model mismatch","Hist_Freq":0.12,"Avg_Delay":4.0,"Severity_S":6,"Occurrence_O":5,"Detection_D":5,"RPN":150,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Moderate \u2013 engineered form design + pre-pour survey limits but does not eliminate","Mitigation_Plan":"Engineered form design; pre-pour survey; BIM 3D form position check","Historical_Behaviour_Notes":"12% frequency. Abutment face deviation > 10 mm requires formal NCR and may affect bearing seat.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-RW-01","Risk_Name":"DPT Wall Cracking from Hydration Heat (High fc' Mix)","Work_Element":"Retaining Wall","Phase":"Retaining Wall","Cause":"fc'45 MPa mix generates high exothermal heat; thin wall section with no insulation; rapid pour","Time_Impact":"Crack mapping + grouting: 3\u20135 days","Cost_Impact_Level":"Low","Safety_Impact":"Long-term durability, seepage","Hist_Freq":0.18,"Avg_Delay":4.0,"Severity_S":5,"Occurrence_O":6,"Detection_D":4,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 insulated blanket curing + thermometer sensors reduces by 85%","Mitigation_Plan":"","Historical_Behaviour_Notes":"18% for high-strength retaining walls poured in single lifts. Temperature differential > 20\u00b0C triggers macro-cracking.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-RW-02","Risk_Name":"Retaining Wall Horizontal Displacement During Backfilling","Work_Element":"Retaining Wall","Phase":"Retaining Wall","Cause":"Premature backfilling before concrete reaches 70% fc'; heavy compaction equipment too close to wall","Time_Impact":"Realignment + re-prop: 5\u201310 days","Cost_Impact_Level":"High","Safety_Impact":"Structural failure of wall","Hist_Freq":0.09,"Avg_Delay":7.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":5,"RPN":160,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 backfill protocol with minimum 72-hr wait + exclusion zone for heavy plant","Mitigation_Plan":"","Historical_Behaviour_Notes":"9% frequency. Wall stiffness is insufficient at early age. Often operator error with compaction equipment proximity.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-RW-03","Risk_Name":"Weep Hole Blockage Causing Hydrostatic Buildup","Work_Element":"Retaining Wall","Phase":"Retaining Wall","Cause":"Granular filter not installed behind weep holes; concrete splatter during pour blocking outlet","Time_Impact":"Delayed failure: 6\u201318 months post-pour","Cost_Impact_Level":"Low","Safety_Impact":"Overturning risk over time","Hist_Freq":0.15,"Avg_Delay":0.0,"Severity_S":4,"Occurrence_O":5,"Detection_D":6,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"Low \u2013 post-construction inspection can catch blockage but often missed","Mitigation_Plan":"","Historical_Behaviour_Notes":"15% frequency. Long-latency risk \u2013 rarely detected before handover. Most dangerous in high rainfall regions.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-GE-01","Risk_Name":"PCI Girder Drop During Crawler Crane Lift","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"Sling angle > 60\u00b0 causing side load; rated capacity underestimated; ground bearing failure under outrigger","Time_Impact":"Fatal incident investigation: 30\u201390 days","Cost_Impact_Level":"High","Safety_Impact":"Fatality, total girder loss","Hist_Freq":0.03,"Avg_Delay":60.0,"Severity_S":10,"Occurrence_O":3,"Detection_D":5,"RPN":150,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 engineered lift plan + IoT sling load cells reduces drop probability by ~90%","Mitigation_Plan":"Engineered lift plan; IoT sling load cells; anemometer auto-stop >40 km/h; AR approach path","Historical_Behaviour_Notes":"3% annual frequency but 10/10 severity. Deadliest single-event risk in bridge construction.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-GE-02","Risk_Name":"Girder Longitudinal Misalignment on Bearing Pad (> \u00b120 mm)","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"Survey control point error; thermal expansion of 50 m girder (~30 mm at \u0394T=30\u00b0C); launcher track deviation","Time_Impact":"Re-lift + re-seat: 3\u20135 days per span","Cost_Impact_Level":"Medium","Safety_Impact":"Eccentric bearing, secondary moments","Hist_Freq":0.15,"Avg_Delay":4.0,"Severity_S":8,"Occurrence_O":6,"Detection_D":5,"RPN":240,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 AR real-time alignment + temperature-corrected survey eliminates in > 90% of cases","Mitigation_Plan":"Total station \u00b15 mm tolerance; BIM georeferenced federated model; AR real-time positioning","Historical_Behaviour_Notes":"15% frequency on long-span girders. Thermal correction is often overlooked. 50 m PCI girder expands ~30 mm in \u0394T=30\u00b0C.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-GE-03","Risk_Name":"Launcher Beam Structural Failure During Launching","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"SWL exceeded; fatigue crack in main weld from prior project; hydraulic jack failure mid-operation","Time_Impact":"Launcher collapse + investigation: 60\u2013120 days","Cost_Impact_Level":"High","Safety_Impact":"Multiple fatalities; total project halt","Hist_Freq":0.02,"Avg_Delay":90.0,"Severity_S":10,"Occurrence_O":2,"Detection_D":8,"RPN":160,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 pre-project NDT inspection + IoT strain gauge reduces probability by 85%","Mitigation_Plan":"Pre-project NDT inspection; IoT strain gauge on main beam; certified assembly checklist","Historical_Behaviour_Notes":"2% frequency but catastrophic. Three fatalities in Indonesian bridge projects 2018\u20132022 from launcher failure.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-GE-04","Risk_Name":"Elastomeric Bearing Pad Misplacement / Wrong Thickness","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"Wrong pad thickness batch delivered; muddy bearing seat; lateral offset > 5 mm","Time_Impact":"Re-lift for bearing replacement: 2\u20134 days","Cost_Impact_Level":"Low","Safety_Impact":"Long-term bearing deterioration, girder rotation","Hist_Freq":0.12,"Avg_Delay":3.0,"Severity_S":6,"Occurrence_O":5,"Detection_D":4,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 material conformance cert + template jig reduces to < 2%","Mitigation_Plan":"Material conformance cert; pre-placement template jig; AR visual guide; photo BIM record","Historical_Behaviour_Notes":"12% frequency \u2013 often caught during post-erection survey but re-lift is expensive.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-GE-05","Risk_Name":"Girder Web Cracking During Transport to Stockyard","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"Insufficient dunnage spacing for 50 m element; road vibration resonance; hairline cracks in prestressed web","Time_Impact":"PT strand investigation + epoxy injection: 5\u201310 days","Cost_Impact_Level":"High","Safety_Impact":"Prestress loss, structural capacity reduction","Hist_Freq":0.08,"Avg_Delay":7.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":6,"RPN":192,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Moderate \u2013 transport engineering plan + crack survey on arrival reduces by 70%","Mitigation_Plan":"Transport engineering plan; shock logger on transporter; crack survey on arrival","Historical_Behaviour_Notes":"8% of precast girder transport events involve damage. Especially risky for > 40 m elements over poor rural roads.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-GE-06","Risk_Name":"Scheduling Clash: Girder Erection Before Abutment Achieves Sufficient Strength","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"MS Project predecessor error (FS lag not enforced); pressure to accelerate; BIM 4D clash not reviewed","Time_Impact":"Hold erection until strength confirmed: 3\u20137 days","Cost_Impact_Level":"Medium","Safety_Impact":"Bearing failure on green concrete","Hist_Freq":0.1,"Avg_Delay":5.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":4,"RPN":128,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 BIM 4D gateway + mandatory cube strength confirmation prevents entirely","Mitigation_Plan":"BIM 4D Navisworks clash detection; mandatory cube strength gateway before erection","Historical_Behaviour_Notes":"10% of BIM-enabled projects still experience this due to manual override of schedule.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-GE-07","Risk_Name":"PT Duct Grouting Void in Post-Tensioned Girder","Work_Element":"Girder Erection","Phase":"Girder Erection","Cause":"Grout mix too stiff; inadequate vent spacing; incomplete grouting sequence; high point trapping air","Time_Impact":"Impact echo testing + re-grouting: 5\u201314 days","Cost_Impact_Level":"High","Safety_Impact":"Tendon corrosion, long-term structural failure","Hist_Freq":0.07,"Avg_Delay":10.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":7,"RPN":224,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Moderate \u2013 vacuum grouting + GPR scanning reduces but does not eliminate","Mitigation_Plan":"Vacuum grouting; GPR scanning post-grouting; BIM PT duct record model","Historical_Behaviour_Notes":"7% of PT bridges show voids detected by impact echo. Major durability issue responsible for several bridge collapses.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-DS-01","Risk_Name":"Deckslab Delamination from PCI Girder Top Flange","Work_Element":"Deck Slab","Phase":"Deck Slab","Cause":"Girder top flange contamination; inadequate surface roughening (CSP < 3); cold joint from delayed pour","Time_Impact":"Saw-cut + re-pour section: 14\u201321 days","Cost_Impact_Level":"High","Safety_Impact":"Composite action loss, punching failure","Hist_Freq":0.09,"Avg_Delay":17.0,"Severity_S":9,"Occurrence_O":4,"Detection_D":6,"RPN":216,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 shear stud torque test + flange cleanliness inspection reduces by 90%","Mitigation_Plan":"Shear stud torque test; clean and wet flange before pour; BIM pour sequence timer","Historical_Behaviour_Notes":"9% frequency. Composite slab-girder interface failure is catastrophic in service.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-DS-02","Risk_Name":"Deckslab Thickness Deviation > \u00b110 mm","Work_Element":"Deck Slab","Phase":"Deck Slab","Cause":"Formwork deflection under wet concrete; screed rail not set to design level; vibrator over-immersion","Time_Impact":"Survey + localized patching: 2\u20134 days","Cost_Impact_Level":"Low","Safety_Impact":"Increased dead load; stiffness reduction","Hist_Freq":0.18,"Avg_Delay":3.0,"Severity_S":5,"Occurrence_O":6,"Detection_D":4,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 GPS screed rail + formwork camber pre-set eliminates > 95% of cases","Mitigation_Plan":"GPS screed rail + formwork camber pre-set; BIM slab geometry comparison survey","Historical_Behaviour_Notes":"18% of decks show isolated thickness non-conformance. Rarely critical but triggers NCR.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-DS-03","Risk_Name":"Concrete Cracking in Deckslab Over Pier (Hogging Region)","Work_Element":"Deck Slab","Phase":"Deck Slab","Cause":"Insufficient top rebar at support; early-age shrinkage; lack of longitudinal compression","Time_Impact":"Crack survey + epoxy injection: 3\u20135 days","Cost_Impact_Level":"Medium","Safety_Impact":"Fatigue crack propagation; corrosion of top steel","Hist_Freq":0.14,"Avg_Delay":4.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":4,"RPN":140,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Moderate \u2013 top rebar inspection + shrinkage crack control concrete reduces by 65%","Mitigation_Plan":"Top rebar BIM inspection; shrinkage-controlled concrete mix; crack monitoring sensor","Historical_Behaviour_Notes":"14% frequency at pier zones. Negative moment crack widths > 0.2 mm at deck top are common.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-DS-04","Risk_Name":"Delayed Concrete Supply Causing Cold Joint in Deck Pour","Work_Element":"Deck Slab","Phase":"Deck Slab","Cause":"Batching plant breakdown; truck queue > 90 min; concrete slump loss at site; driver delay","Time_Impact":"Cold joint remediation: 1\u20133 days per event","Cost_Impact_Level":"Medium","Safety_Impact":"Horizontal interface crack across deck width","Hist_Freq":0.2,"Avg_Delay":2.0,"Severity_S":7,"Occurrence_O":6,"Detection_D":4,"RPN":168,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 backup batching plant agreement + concrete retarder admixture eliminates in 95%","Mitigation_Plan":"Backup batching agreement; concrete retarder admixture; BIM pour sequence timer","Historical_Behaviour_Notes":"20% of large deck pours experience at least one supply disruption.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-DS-05","Risk_Name":"Waterproofing Membrane Failure on Deck","Work_Element":"Deck Slab","Phase":"Deck Slab","Cause":"Inadequate surface preparation; membrane applied at wrong temperature; puncture from rebar chairs","Time_Impact":"Membrane strip + reapply: 5\u20138 days","Cost_Impact_Level":"Low","Safety_Impact":"Reinforcement corrosion; deck deterioration","Hist_Freq":0.15,"Avg_Delay":6.0,"Severity_S":6,"Occurrence_O":5,"Detection_D":4,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"Moderate \u2013 adhesion test + flood test at 25 mm head detects 80% of defects","Mitigation_Plan":"Adhesion test + flood test at 25 mm head; BIM waterproofing record per bay","Historical_Behaviour_Notes":"15% of bridge decks show early waterproofing failure. Most failures within 5 years.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-FW-01","Risk_Name":"Formwork Collapse Under Wet Concrete Load","Work_Element":"Formwork","Phase":"Formwork","Cause":"Inadequate shoring capacity (overloaded by > 25%); failure of props; inadequate bracing against lateral load","Time_Impact":"Collapse investigation + rebuild: 14\u201330 days","Cost_Impact_Level":"High","Safety_Impact":"Multiple fatalities; concrete total loss","Hist_Freq":0.05,"Avg_Delay":21.0,"Severity_S":10,"Occurrence_O":3,"Detection_D":5,"RPN":150,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 PE-stamped formwork design + third-party inspection reduces by > 95%","Mitigation_Plan":"PE-stamped formwork design; third-party pre-pour inspection; BIM load simulation","Historical_Behaviour_Notes":"5% frequency globally. Formwork collapse causes > 25% of all construction fatalities.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FW-02","Risk_Name":"Formwork Premature Striking (Concrete < 70% fc')","Work_Element":"Formwork","Phase":"Formwork","Cause":"Schedule pressure; incorrect cube test sampling; verbal instruction without test result","Time_Impact":"Re-shore + extended monitoring: 3\u20135 days","Cost_Impact_Level":"Medium","Safety_Impact":"Deflection, cracking under self-weight","Hist_Freq":0.12,"Avg_Delay":4.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":4,"RPN":140,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 digital cube test record + mandatory sign-off protocol prevents","Mitigation_Plan":"Digital cube test record; mandatory QE sign-off; BIM activity gate control","Historical_Behaviour_Notes":"12% frequency. Common when PM overrides QE on schedule-critical activities.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-FW-03","Risk_Name":"Formwork Leakage Causing Honeycombing","Work_Element":"Formwork","Phase":"Formwork","Cause":"Joint gaps > 5 mm; foam seal not applied; excessive vibration at form face","Time_Impact":"Hack-out + patch repair: 2\u20134 days","Cost_Impact_Level":"Low","Safety_Impact":"Surface defect, rebar exposure","Hist_Freq":0.25,"Avg_Delay":3.0,"Severity_S":5,"Occurrence_O":7,"Detection_D":3,"RPN":105,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 form joint foam seal + vibration zone protocol reduces by 80%","Mitigation_Plan":"Form joint foam seal; vibration zone protocol; BIM surface defect record map","Historical_Behaviour_Notes":"25% of formed surfaces show some honeycombing. Most common concrete defect.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-FW-04","Risk_Name":"Formwork Geometric Deviation > Design Tolerance","Work_Element":"Formwork","Phase":"Formwork","Cause":"Inadequate propping spacing; form panel warping from moisture; poor line and level at erection","Time_Impact":"Survey + re-prop: 1\u20133 days","Cost_Impact_Level":"Low","Safety_Impact":"Dimensional NCR; out-of-plumb concrete surface","Hist_Freq":0.15,"Avg_Delay":2.0,"Severity_S":4,"Occurrence_O":6,"Detection_D":4,"RPN":96,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 BIM 3D form position check + pre-pour survey eliminates","Mitigation_Plan":"BIM 3D form position check; pre-pour survey; AR alignment overlay","Historical_Behaviour_Notes":"15% frequency. BIM clash detection identifies > 80% pre-pour.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-RE-01","Risk_Name":"Wrong Rebar Grade or Diameter Supplied","Work_Element":"Reinforcement","Phase":"Reinforcement","Cause":"Procurement specification error; supplier substitution without approval; mill test certificate not verified","Time_Impact":"Material rejection + re-supply: 5\u201310 days","Cost_Impact_Level":"High","Safety_Impact":"Structural capacity deficiency","Hist_Freq":0.08,"Avg_Delay":7.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":5,"RPN":160,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 MTC verification at delivery gate + random tensile test prevents 95%","Mitigation_Plan":"MTC verification at delivery gate; random tensile test; BIM rebar schedule cross-check","Historical_Behaviour_Notes":"8% frequency. Grade 250 supplied instead of Grade 400 has occurred in Indonesian bridge projects.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-RE-02","Risk_Name":"Insufficient Concrete Cover to Reinforcement","Work_Element":"Reinforcement","Phase":"Reinforcement","Cause":"Cover block missing or inadequate; rebar chair height wrong; vibrator displacement during compaction","Time_Impact":"Cover survey + patching: 2\u20134 days","Cost_Impact_Level":"Low","Safety_Impact":"Corrosion in marine/aggressive environment","Hist_Freq":0.25,"Avg_Delay":3.0,"Severity_S":6,"Occurrence_O":7,"Detection_D":3,"RPN":126,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 cover meter survey before pour catches 90%; AR overlay during installation","Mitigation_Plan":"Cover meter survey before pour; AR cover overlay during installation; BIM cover record","Historical_Behaviour_Notes":"25% of bridge elements fail cover survey. Leading long-term durability risk.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-RE-03","Risk_Name":"Rebar Lap Length Non-Conformance","Work_Element":"Reinforcement","Phase":"Reinforcement","Cause":"Drawing misread; bar scheduler error; field cutting with wrong offset","Time_Impact":"Expose + add supplementary bars: 3\u20135 days","Cost_Impact_Level":"Medium","Safety_Impact":"Structural splice failure under seismic/overload","Hist_Freq":0.12,"Avg_Delay":4.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":4,"RPN":140,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 BIM rebar model + shop drawing check prevents in > 90% of cases","Mitigation_Plan":"BIM rebar model + shop drawing check; AR lap length guide on site","Historical_Behaviour_Notes":"12% frequency. Most common structural non-conformance in reinforced concrete bridges.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-RE-04","Risk_Name":"Corrosion of Rebar Before Concreting (> Allowable Pitting)","Work_Element":"Reinforcement","Phase":"Reinforcement","Cause":"Extended storage on site without protection; saline environment; no rust-inhibiting coating","Time_Impact":"Wire brush + re-inspect: 1\u20132 days","Cost_Impact_Level":"Low","Safety_Impact":"Bond strength reduction, section loss","Hist_Freq":0.15,"Avg_Delay":1.0,"Severity_S":4,"Occurrence_O":6,"Detection_D":5,"RPN":120,"Risk_Level":"LOW","Mitigation_Effectiveness":"Moderate \u2013 covered storage + anti-corrosion paint where > 3 months stored","Mitigation_Plan":"","Historical_Behaviour_Notes":"15% of projects experience rebar corrosion on site. Deep pitting reduces fy by > 5%.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-RE-05","Risk_Name":"Rebar Congestion Preventing Concrete Flow","Work_Element":"Reinforcement","Phase":"Reinforcement","Cause":"Design with bar spacing < 1.5\u00d7 aggregate size; inadequate BIM clash detection; multiple laps at connections","Time_Impact":"Pour stoppage + vibrator access: 0.5\u20131 day","Cost_Impact_Level":"Low","Safety_Impact":"Voids and honeycombing at congested zones","Hist_Freq":0.1,"Avg_Delay":1.0,"Severity_S":5,"Occurrence_O":4,"Detection_D":4,"RPN":80,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 BIM 3D rebar model detects all clashes pre-fabrication","Mitigation_Plan":"BIM 3D rebar clash detection; aggregate size design check; vibration pocket planning","Historical_Behaviour_Notes":"10% frequency. Congestion worst at pile cap/column junctions.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-EL-01","Risk_Name":"Crawler Crane Mechanical Breakdown During Erection","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Insufficient preventive maintenance; hydraulic hose failure; lack of spare parts; single-crane dependency","Time_Impact":"Breakdown + backup crane: 3\u20137 days","Cost_Impact_Level":"Medium","Safety_Impact":"Critical path delay; idle labour cost","Hist_Freq":0.15,"Avg_Delay":5.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":4,"RPN":140,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"Moderate \u2013 PM schedule + backup crane agreement reduces downtime by 60%","Mitigation_Plan":"Critical path delay 3\u20137 days; idle labour cost; standby cost","Historical_Behaviour_Notes":"15% of crane-intensive bridge projects experience at least one unplanned breakdown.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-EL-02","Risk_Name":"Transport Permit Delay for Oversized Girder Delivery","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Permit application submitted late; route survey not completed; police escort scheduling failure","Time_Impact":"Delay in girder arrival: 5\u201314 days","Cost_Impact_Level":"Low","Safety_Impact":"Critical path delay; stockyard space constraint","Hist_Freq":0.18,"Avg_Delay":9.0,"Severity_S":6,"Occurrence_O":6,"Detection_D":4,"RPN":144,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 permit submitted 8 weeks ahead + dedicated logistics manager reduces by 80%","Mitigation_Plan":"Girder arrival delay 5\u201314 days; stockyard constraint; critical path impact","Historical_Behaviour_Notes":"18% frequency in Indonesia due to complex multi-agency permit process. 50 m PCI girder requires special escort.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-EL-03","Risk_Name":"Fuel / Material Supply Disruption","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Supplier contract failure; port congestion; price escalation; remote site access","Time_Impact":"Stop-work 2\u20135 days","Cost_Impact_Level":"Low","Safety_Impact":"Labour standby cost; schedule delay","Hist_Freq":0.1,"Avg_Delay":3.0,"Severity_S":5,"Occurrence_O":4,"Detection_D":5,"RPN":100,"Risk_Level":"LOW","Mitigation_Effectiveness":"Moderate \u2013 5-day fuel buffer stock on site + dual supplier contract","Mitigation_Plan":"5-day fuel buffer stock; dual supplier contract; BIM supply chain dashboard","Historical_Behaviour_Notes":"10% frequency. Higher risk in remote sites > 50 km from supply hub.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-EL-04","Risk_Name":"Worker Fall from Formwork / Scaffolding","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Missing handrail; inadequate fall arrest harness use; wet/slippery surface; scaffold overload","Time_Impact":"Incident investigation: 3\u201314 days","Cost_Impact_Level":"High","Safety_Impact":"Fatality or serious injury","Hist_Freq":0.12,"Avg_Delay":7.0,"Severity_S":9,"Occurrence_O":5,"Detection_D":5,"RPN":225,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 mandatory harness + IoT wearable safety sensors reduces by 75%","Mitigation_Plan":"Mandatory harness + IoT wearable safety sensors; toolbox talk; BIM safety zone model","Historical_Behaviour_Notes":"12% of bridge projects report at least one height-related incident. Falls are #1 cause of construction fatalities globally (40%).","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-EL-05","Risk_Name":"Concrete Pump Blockage During Deck Pour","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Concrete slump < 120 mm at pump; aggregate jamming at elbow; line not flushed before pour","Time_Impact":"Pump clear + restart: 0.5\u20132 hours","Cost_Impact_Level":"Low","Safety_Impact":"Cold joint formation if > 45 min gap","Hist_Freq":0.2,"Avg_Delay":0.5,"Severity_S":5,"Occurrence_O":6,"Detection_D":3,"RPN":90,"Risk_Level":"LOW","Mitigation_Effectiveness":"High \u2013 pump trial run + admixture-adjusted mix + backup pump on standby","Mitigation_Plan":"Pump trial run; admixture-adjusted mix; backup pump on standby; BIM pour timer","Historical_Behaviour_Notes":"20% of deck pours experience at least one pump blockage. Usually short duration but triggers cold joint risk.","Max_Allowable_Delay":"\u2264 14 days"},{"Risk_ID":"BR-EL-06","Risk_Name":"Adverse Weather: Wind Speed Exceeding Safe Lifting Limit","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Seasonal monsoon gusts; insufficient weather monitoring; crane operation above 45 km/h limit","Time_Impact":"Work stoppage 0.5\u20132 days","Cost_Impact_Level":"Low","Safety_Impact":"Crane overload; load swing; collision","Hist_Freq":0.22,"Avg_Delay":1.0,"Severity_S":7,"Occurrence_O":5,"Detection_D":4,"RPN":140,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 anemometer with automated crane stop + BIM weather-integrated schedule","Mitigation_Plan":"","Historical_Behaviour_Notes":"22% frequency during monsoon season (Oct\u2013Dec). Wind speed > 45 km/h mandates crane shutdown per AS 2550.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-EL-07","Risk_Name":"Material Test Failure (Concrete Cube or Rebar Tensile)","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Incorrect mix design; poor sampling technique; laboratory error; field non-compliance","Time_Impact":"Investigation + re-test: 3\u20137 days","Cost_Impact_Level":"High","Safety_Impact":"NCR, potential demolition of poured element","Hist_Freq":0.1,"Avg_Delay":5.0,"Severity_S":8,"Occurrence_O":4,"Detection_D":5,"RPN":160,"Risk_Level":"MEDIUM","Mitigation_Effectiveness":"High \u2013 on-site NDT (rebound hammer at 7 days) as early warning system","Mitigation_Plan":"","Historical_Behaviour_Notes":"10% of cube sets fail at 28 days. Systematic test failure triggers structural investigation per ACI 318.","Max_Allowable_Delay":"\u2264 7 days"},{"Risk_ID":"BR-EL-08","Risk_Name":"Survey Control Point Disturbance During Construction","Work_Element":"Equipment & Logistics","Phase":"Equipment & Logistics","Cause":"Heavy plant knocking primary benchmark; vibration-induced monument shift; no regular re-observation","Time_Impact":"Re-establish control + re-survey: 1\u20133 days","Cost_Impact_Level":"Low","Safety_Impact":"Accumulated dimensional error propagated to structure","Hist_Freq":0.1,"Avg_Delay":2.0,"Severity_S":5,"Occurrence_O":4,"Detection_D":5,"RPN":100,"Risk_Level":"LOW","Mitigation_Effectiveness":"High - protected monument enclosure + weekly independent check observation","Mitigation_Plan":"Protected monument enclosure; weekly independent check; BIM georeferencing report","Historical_Behaviour_Notes":"10% frequency. Often undetected until closing dimensions fail. Can propagate up to 50 mm error in span length.","Max_Allowable_Delay":"\u2264 14 days"}];
+
+// KB state
+let kbPhase='all', kbLevel='all', kbCost='all';
+
+function kbFilter(type, val, el){
+  if(type==='phase'){kbPhase=val; document.querySelectorAll('#phase-tags .kbtag').forEach(t=>t.classList.remove('active')); el.classList.add('active');}
+  if(type==='level'){kbLevel=val; document.querySelectorAll('#level-tags .kbtag').forEach(t=>t.classList.remove('active')); el.classList.add('active');}
+  if(type==='cost'){kbCost=val; document.querySelectorAll('#cost-tags .kbtag').forEach(t=>t.classList.remove('active')); el.classList.add('active');}
+  kbRender();
+}
+function kbClearFilters(){
+  kbPhase='all'; kbLevel='all'; kbCost='all';
+  document.getElementById('kb-search').value='';
+  document.querySelectorAll('[data-phase="all"]').forEach(t=>{t.classList.add('active')}); 
+  document.querySelectorAll('[data-phase]:not([data-phase="all"])').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('[data-level="all"]').forEach(t=>{t.classList.add('active')});
+  document.querySelectorAll('[data-level]:not([data-level="all"])').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('[data-cost="all"]').forEach(t=>{t.classList.add('active')});
+  document.querySelectorAll('[data-cost]:not([data-cost="all"])').forEach(t=>t.classList.remove('active'));
+  kbRender();
+}
+
+function rpnClass(rpn){ return rpn>350?'rph': rpn>=125?'rpm': rpn>=30?'rpy':'rpl'; }
+function levelBadge(lv){ return lv==='HIGH'?'bh':lv==='MEDIUM'?'bm':'bl'; }
+function costBadge(c){ return c==='High'?'bh':c==='Medium'?'bm':'bd'; }
+
+function kbRender(){
+  const q=(document.getElementById('kb-search').value||'').toLowerCase();
+  const filtered=KB_DATA.filter(r=>{
+    if(kbPhase!=='all'&&r.Phase!==kbPhase)return false;
+    if(kbLevel!=='all'&&r.Risk_Level!==kbLevel)return false;
+    if(kbCost!=='all'&&r.Cost_Impact_Level!==kbCost)return false;
+    if(q&&![r.Risk_ID,r.Risk_Name,r.Work_Element,r.Cause,r.Mitigation_Plan,r.Phase].some(v=>String(v).toLowerCase().includes(q)))return false;
+    return true;
+  });
+  document.getElementById('kb-count').textContent=filtered.length;
+  const tbody=document.getElementById('kb-tbody');
+  tbody.innerHTML=filtered.map(r=>`
+    <tr onclick="showKbDetail('${r.Risk_ID}')">
+      <td><code style="font-size:10px;background:var(--bg);padding:2px 6px;border-radius:3px">${r.Risk_ID}</code></td>
+      <td style="font-weight:500">${r.Risk_Name}</td>
+      <td style="color:var(--t2)">${r.Work_Element}</td>
+      <td style="color:var(--t2)">${r.Phase}</td>
+      <td style="text-align:center;font-weight:600">${(r.Hist_Freq*100).toFixed(0)}%</td>
+      <td style="text-align:center;font-weight:600">${r.Avg_Delay>0?r.Avg_Delay+' d':'—'}</td>
+      <td style="text-align:center;font-weight:700">${r.Severity_S}</td>
+      <td style="text-align:center;font-weight:700">${r.Occurrence_O}</td>
+      <td style="text-align:center;font-weight:700">${r.Detection_D}</td>
+      <td style="text-align:center"><span class="rpnc ${rpnClass(r.RPN)}">${r.RPN}</span></td>
+      <td><span class="badge ${levelBadge(r.Risk_Level)}">${r.Risk_Level}</span></td>
+      <td><span class="badge ${costBadge(r.Cost_Impact_Level)}">${r.Cost_Impact_Level}</span></td>
+      <td style="color:var(--t2);font-size:11px">${r.Safety_Impact||'—'}</td>
+      <td style="color:var(--t2);font-size:11px;max-width:200px">${r.Mitigation_Plan||'—'}</td>
+      <td style="text-align:center;font-weight:600;font-size:11px">${r.Max_Allowable_Delay||'—'}</td>
+    </tr>`).join('');
+}
+
+function showKbDetail(id){
+  const r=KB_DATA.find(x=>x.Risk_ID===id);
+  if(!r)return;
+  document.getElementById('modal-id').textContent=r.Risk_ID+' · '+r.Phase;
+  document.getElementById('modal-name').textContent=r.Risk_Name;
+  const cls=r.Risk_Level==='HIGH'?'bh':r.Risk_Level==='MEDIUM'?'bm':'bl';
+  document.getElementById('modal-body').innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <span class="badge ${cls}">${r.Risk_Level} Risk</span>
+      <span class="rpnc ${rpnClass(r.RPN)}" style="padding:3px 10px;border-radius:4px">RPN: ${r.RPN}</span>
+      <span class="badge ${costBadge(r.Cost_Impact_Level)}">${r.Cost_Impact_Level} Cost</span>
+    </div>
+    <div class="mrow"><span class="mlbl">Work Element</span><span class="mval">${r.Work_Element}</span></div>
+    <div class="mrow"><span class="mlbl">Phase</span><span class="mval">${r.Phase}</span></div>
+    <div class="mrow"><span class="mlbl">Cause</span><span class="mval">${r.Cause}</span></div>
+    <div class="mrow"><span class="mlbl">Time Impact</span><span class="mval">${r.Time_Impact}</span></div>
+    <div class="mrow"><span class="mlbl">Safety Impact</span><span class="mval">${r.Safety_Impact||'—'}</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0;background:var(--bg);padding:14px;border-radius:var(--rs)">
+      <div style="text-align:center"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tm);margin-bottom:4px">Occurrence (O)</div><div style="font-size:22px;font-weight:800">${r.Occurrence_O}</div></div>
+      <div style="text-align:center"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tm);margin-bottom:4px">Severity (S)</div><div style="font-size:22px;font-weight:800">${r.Severity_S}</div></div>
+      <div style="text-align:center"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tm);margin-bottom:4px">Detection (D)</div><div style="font-size:22px;font-weight:800">${r.Detection_D}</div></div>
+    </div>
+    <div class="mrow"><span class="mlbl">Historical Frequency</span><span class="mval">${(r.Hist_Freq*100).toFixed(0)}% of bridge projects</span></div>
+    <div class="mrow"><span class="mlbl">Avg Delay</span><span class="mval">${r.Avg_Delay>0?r.Avg_Delay+' days':'—'}</span></div>
+    <div class="mrow"><span class="mlbl">Max Allowable Delay</span><span class="mval">${r.Max_Allowable_Delay||'—'}</span></div>
+    <div class="mrow"><span class="mlbl">Mitigation Effectiveness</span><span class="mval">${r.Mitigation_Effectiveness||'—'}</span></div>
+    <div class="mrow"><span class="mlbl">Mitigation Plan</span><span class="mval">${r.Mitigation_Plan||'—'}</span></div>
+    <div class="mrow"><span class="mlbl">Historical Notes</span><span class="mval">${r.Historical_Behaviour_Notes||'—'}</span></div>
+  `;
+  document.getElementById('kb-modal').classList.add('show');
+}
+function closeModal(e){ if(e.target===document.getElementById('kb-modal')) document.getElementById('kb-modal').classList.remove('show'); }
+
+// KB phase chart
+const phases=['Foundation','Pile Cap','Abutment','Retaining Wall','Girder Erection','Deck Slab','Formwork','Reinforcement','Equipment & Logistics'];
+const phaseAvgRPN=phases.map(p=>{const d=KB_DATA.filter(r=>r.Phase===p);return d.length?Math.round(d.reduce((s,r)=>s+r.RPN,0)/d.length):0;});
+const phaseMaxRPN=phases.map(p=>{const d=KB_DATA.filter(r=>r.Phase===p);return d.length?Math.max(...d.map(r=>r.RPN)):0;});
+new Chart(document.getElementById('kbPhaseChart'),{type:'bar',data:{labels:phases.map(p=>p.length>12?p.substring(0,12)+'…':p),datasets:[{label:'Avg RPN',data:phaseAvgRPN,backgroundColor:'rgba(61,181,74,.7)',borderRadius:4},{label:'Max RPN',data:phaseMaxRPN,backgroundColor:'rgba(224,53,62,.7)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:true,position:'top',labels:{font:fo,color:'#5A6B5C',usePointStyle:true}}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Poppins',sans-serif",size:8},color:'#9CAA9E'}},y:{grid:{color:gc},ticks:{font:fo,color:'#9CAA9E'}}}}});
+
+const phaseAvgDelay=phases.map(p=>{const d=KB_DATA.filter(r=>r.Phase===p&&r.Avg_Delay>0);return d.length?+(d.reduce((s,r)=>s+r.Avg_Delay,0)/d.length).toFixed(1):0;});
+new Chart(document.getElementById('kbDelayChart'),{type:'bar',data:{labels:phases.map(p=>p.length>12?p.substring(0,12)+'…':p),datasets:[{label:'Avg Delay (days)',data:phaseAvgDelay,backgroundColor:'rgba(240,132,76,.7)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:true,position:'top',labels:{font:fo,color:'#5A6B5C',usePointStyle:true}}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Poppins',sans-serif",size:8},color:'#9CAA9E'}},y:{grid:{color:gc},ticks:{font:fo,color:'#9CAA9E'}}}}});
+
+kbRender();
+</script>
+<!-- ══ BIM 3D VIEWER SCRIPT ══ -->
+<script>
+(function(){
+  var BIM_INIT = false;
+  var BIM_RAF  = null;
+
+  // ── Klasifikasi RPN: >350=MERAH, 125-350=ORANGE, 30-124=KUNING, <30=HIJAU
+  // Struktur Jembatan Djoglo Bridge (koordinat [x, y] = [melintang, elevasi])
+  // Terdiri dari: Pile (pondasi), Pile Cap, Abutment, Wingwall, Diaphragm, Girder, Deck
+  var ELEMENTS = [
+    // ── PONDASI PILE (kiri - East) – 4 tiang
+    { id:'PL-E1', label:'Pile E1 (D13)',     rid:'R-013', rpn:256, o:4, s:8, d:4, status:'On Progress', depth:0.18,
+      pts:[[-2.55,-1.6],[-2.37,-1.6],[-2.37,0.0],[-2.55,0.0]] },
+    { id:'PL-E2', label:'Pile E2',           rid:'R-014', rpn:80,  o:2, s:5, d:3, status:'Mitigated',   depth:0.18,
+      pts:[[-2.10,-1.6],[-1.92,-1.6],[-1.92,0.0],[-2.10,0.0]] },
+    // ── PONDASI PILE (kanan - West) – 2 tiang
+    { id:'PL-W1', label:'Pile W1',           rid:'R-010', rpn:90,  o:2, s:5, d:3, status:'Mitigated',   depth:0.18,
+      pts:[[ 1.92,-1.6],[ 2.10,-1.6],[ 2.10,0.0],[ 1.92,0.0]] },
+    { id:'PL-W2', label:'Pile W2',           rid:'R-015', rpn:28,  o:1, s:4, d:3, status:'Resolved',    depth:0.18,
+      pts:[[ 2.37,-1.6],[ 2.55,-1.6],[ 2.55,0.0],[ 2.37,0.0]] },
+
+    // ── PILE CAP (kiri)
+    { id:'PC-E',  label:'Pile Cap – East',   rid:'R-016', rpn:45,  o:2, s:5, d:4, status:'Resolved',    depth:0.55,
+      pts:[[-2.70,-0.05],[-1.75,-0.05],[-1.75,0.30],[-2.70,0.30]] },
+    // ── PILE CAP (kanan)
+    { id:'PC-W',  label:'Pile Cap – West',   rid:'R-017', rpn:22,  o:1, s:4, d:3, status:'Resolved',    depth:0.55,
+      pts:[[ 1.75,-0.05],[ 2.70,-0.05],[ 2.70,0.30],[ 1.75,0.30]] },
+
+    // ── ABUTMENT EAST (trapezoidal – lebih proporsional)
+    { id:'ABT-E', label:'East Abutment',     rid:'R-007', rpn:500, o:1, s:10,d:5, status:'Pending',     depth:0.50,
+      pts:[[-2.60,0.30],[-1.80,0.30],[-1.85,0.90],[-2.00,1.20],[-2.40,1.20],[-2.55,0.90]] },
+    // ── ABUTMENT WEST
+    { id:'ABT-W', label:'West Abutment',     rid:'R-003', rpn:160, o:2, s:8, d:5, status:'On Progress', depth:0.50,
+      pts:[[ 1.80,0.30],[ 2.60,0.30],[ 2.55,0.90],[ 2.40,1.20],[ 2.00,1.20],[ 1.85,0.90]] },
+
+    // ── WINGWALL EAST (sepasang, depan & belakang)
+    { id:'WW-E1', label:'East Wingwall 1',   rid:'R-009', rpn:40,  o:2, s:5, d:4, status:'Resolved',    depth:0.18,
+      pts:[[-3.10,0.30],[-2.60,0.30],[-2.60,0.95],[-3.10,0.85]] },
+    { id:'WW-E2', label:'East Wingwall 2',   rid:'R-012', rpn:25,  o:1, s:4, d:3, status:'Resolved',    depth:0.18,
+      pts:[[-2.60,0.30],[-2.55,0.90],[-2.55,1.10],[-2.60,0.95]] },
+    // ── WINGWALL WEST
+    { id:'WW-W1', label:'West Wingwall 1',   rid:'R-011', rpn:35,  o:2, s:4, d:4, status:'Resolved',    depth:0.18,
+      pts:[[ 2.60,0.30],[ 3.10,0.30],[ 3.10,0.85],[ 2.60,0.95]] },
+    { id:'WW-W2', label:'West Wingwall 2',   rid:'R-018', rpn:20,  o:1, s:3, d:3, status:'Resolved',    depth:0.18,
+      pts:[[ 2.55,0.90],[ 2.60,0.95],[ 2.60,1.10],[ 2.55,1.10]] },
+
+    // ── DIAPHRAGM (End Diaphragm, di ujung girder)
+    { id:'DF-E',  label:'End Diaphragm E',   rid:'R-004', rpn:105, o:3, s:7, d:5, status:'On Progress', depth:0.60,
+      pts:[[-1.85,1.20],[-1.55,1.20],[-1.55,1.55],[-1.85,1.55]] },
+    { id:'DF-W',  label:'End Diaphragm W',   rid:'R-005', rpn:90,  o:2, s:5, d:3, status:'Resolved',    depth:0.60,
+      pts:[[ 1.55,1.20],[ 1.85,1.20],[ 1.85,1.55],[ 1.55,1.55]] },
+    // ── INTERMEDIATE DIAPHRAGM (tengah bentang)
+    { id:'DF-M',  label:'Mid Diaphragm',     rid:'R-019', rpn:55,  o:2, s:5, d:3, status:'Mitigated',   depth:0.60,
+      pts:[[-0.12,1.20],[ 0.12,1.20],[ 0.12,1.55],[-0.12,1.55]] },
+
+    // ── GIRDER (3 girder I-beam, panjang bentang)
+    { id:'GR-1',  label:'Girder 1 (Utara)',  rid:'R-002', rpn:48,  o:2, s:6, d:4, status:'Mitigated',   depth:0.16,
+      pts:[[-1.85,1.20],[ 1.85,1.20],[ 1.85,1.55],[-1.85,1.55]] },
+    { id:'GR-2',  label:'Girder 2 (Tengah)', rid:'R-020', rpn:38,  o:2, s:5, d:4, status:'Resolved',    depth:0.16,
+      pts:[[-1.85,1.20],[ 1.85,1.20],[ 1.85,1.55],[-1.85,1.55]] },
+
+    // ── DECK SLAB
+    { id:'DECK',  label:'Deck Slab',         rid:'R-006', rpn:55,  o:3, s:4, d:3, status:'Mitigated',   depth:0.80,
+      pts:[[-1.95,1.55],[ 1.95,1.55],[ 1.95,1.72],[-1.95,1.72]] },
+
+    // ── ROAD SURFACE
+    { id:'ROAD',  label:'Road Surface',      rid:'R-021', rpn:18,  o:1, s:3, d:3, status:'Resolved',    depth:0.82,
+      pts:[[-1.90,1.72],[ 1.90,1.72],[ 1.90,1.80],[-1.90,1.80]] },
+  ];
+
+  // Klasifikasi RPN sesuai tabel: >350 MERAH, 125-350 ORANGE, 30-124 KUNING, <30 HIJAU
+  function rpnFill(rpn, a) {
+    a = a||1;
+    if(rpn > 350)  return 'rgba(229,62,62,'+a+')';
+    if(rpn >= 125) return 'rgba(240,132,76,'+a+')';
+    if(rpn >= 30)  return 'rgba(245,200,66,'+a+')';
+    return 'rgba(61,181,74,'+a+')';
+  }
+
+  function rpnLabel(rpn){
+    if(rpn > 350)  return 'TINGGI';
+    if(rpn >= 125) return 'MEDIUM';
+    if(rpn >= 30)  return 'RENDAH';
+    return 'TIDAK ADA';
+  }
+
+  var rotY=-30, rotX=28, sc=72, autoRot=true;
+  var dragging=false, lx=0, ly=0;
+  var wireframe=false;
+  var selected=ELEMENTS[0];
+  var canvas, ctx, tooltip;
+
+  function proj(x3,y3,z3){
+    var ry=rotY*Math.PI/180, rx=rotX*Math.PI/180;
+    var x1=x3*Math.cos(ry)-z3*Math.sin(ry);
+    var z1=x3*Math.sin(ry)+z3*Math.cos(ry);
+    var y2=y3*Math.cos(rx)-z1*Math.sin(rx);
+    var z2=y3*Math.sin(rx)+z1*Math.cos(rx);
+    var fov=3.5, pf=fov/(fov+z2*0.18);
+    var W=canvas.offsetWidth, H=canvas.offsetHeight;
+    return { x: W/2 + x1*sc*pf, y: H/2+30 - y2*sc*pf, z: z2 };
+  }
+
+  function buildFaces(){
+    var faces=[];
+    ELEMENTS.forEach(function(el){
+      var depth = el.depth || 0.3;
+      var n=el.pts.length;
+      var top=el.pts.map(function(p){ return proj(p[0],p[1],depth); });
+      var bot=el.pts.map(function(p){ return proj(p[0],p[1],0); });
+      var avgZ=top.reduce(function(s,p){return s+p.z;},0)/n;
+      faces.push({el:el, pts:top, face:'top', z:avgZ});
+      for(var i=0;i<n;i++){
+        var j=(i+1)%n;
+        var sp=[bot[i],bot[j],top[j],top[i]];
+        var sz=sp.reduce(function(s,p){return s+p.z;},0)/4;
+        faces.push({el:el, pts:sp, face:'side', z:sz});
+      }
+    });
+    return faces;
+  }
+
+  function draw(){
+    if(!canvas) return;
+    var W=canvas.offsetWidth, H=canvas.offsetHeight;
+    canvas.width=W; canvas.height=H;
+    ctx.clearRect(0,0,W,H);
+
+    var g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.7);
+    g.addColorStop(0,'#1a3a1c'); g.addColorStop(1,'#0D1B0F');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle='rgba(61,181,74,0.06)'; ctx.lineWidth=0.5;
+    for(var i=-10;i<=10;i++){
+      var a=proj(i*0.4,-1.65,0), b=proj(i*0.4,-1.65,1.0);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      var c=proj(-4.0,-1.65,i*0.1), d=proj(4.0,-1.65,i*0.1);
+      ctx.beginPath(); ctx.moveTo(c.x,c.y); ctx.lineTo(d.x,d.y); ctx.stroke();
+    }
+
+    // ground / tanah
+    var gp=[proj(-3.8,-1.65,0),proj(3.8,-1.65,0),proj(3.8,-1.65,1.0),proj(-3.8,-1.65,1.0)];
+    ctx.beginPath(); gp.forEach(function(p,i){i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);}); ctx.closePath();
+    ctx.fillStyle='rgba(20,45,22,0.5)'; ctx.fill();
+
+    // sungai (di bawah bentang)
+    var rp=[proj(-1.75,-1.65,0),proj(1.75,-1.65,0),proj(1.75,-1.65,1.0),proj(-1.75,-1.65,1.0)];
+    ctx.beginPath(); rp.forEach(function(p,i){i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);}); ctx.closePath();
+    ctx.fillStyle='rgba(20,80,160,0.45)'; ctx.fill();
+    ctx.strokeStyle='rgba(60,140,220,0.3)'; ctx.lineWidth=0.8; ctx.stroke();
+
+    var faces=buildFaces();
+    faces.sort(function(a,b){return b.z-a.z;});
+
+    faces.forEach(function(f){
+      var el=f.el, isSel=(el===selected);
+      ctx.beginPath();
+      f.pts.forEach(function(p,i){i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});
+      ctx.closePath();
+      if(!wireframe){
+        ctx.fillStyle=f.face==='top'?rpnFill(el.rpn,0.85):rpnFill(el.rpn,0.45);
+        ctx.fill();
+      }
+      ctx.strokeStyle=isSel?'#fff':rpnFill(el.rpn,0.7);
+      ctx.lineWidth=isSel?2:0.6;
+      ctx.stroke();
+
+      if(isSel && f.face==='top'){
+        ctx.save();
+        ctx.shadowColor=rpnFill(el.rpn,1); ctx.shadowBlur=16;
+        ctx.strokeStyle='rgba(255,255,255,0.8)'; ctx.lineWidth=2; ctx.stroke();
+        ctx.restore();
+      }
+
+      if(f.face==='top' && !wireframe && sc>65){
+        var cx=f.pts.reduce(function(s,p){return s+p.x;},0)/f.pts.length;
+        var cy=f.pts.reduce(function(s,p){return s+p.y;},0)/f.pts.length;
+        ctx.save();
+        ctx.font='bold '+(isSel?11:9)+'px Poppins,sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,0.8)'; ctx.shadowBlur=4;
+        ctx.fillText(el.rpn,cx,cy);
+        ctx.restore();
+      }
+    });
+  }
+
+  function pointInPoly(mx,my,pts){
+    var inside=false;
+    for(var i=0,j=pts.length-1;i<pts.length;j=i++){
+      var xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;
+      if(((yi>my)!==(yj>my))&&(mx<(xj-xi)*(my-yi)/(yj-yi)+xi)) inside=!inside;
+    }
+    return inside;
+  }
+
+  function hitTest(mx,my){
+    var faces=buildFaces().filter(function(f){return f.face==='top';});
+    faces.sort(function(a,b){return a.z-b.z;});
+    for(var i=0;i<faces.length;i++){
+      if(pointInPoly(mx,my,faces[i].pts)) return faces[i].el;
+    }
+    return null;
+  }
+
+  function selectEl(el){
+    selected=el; autoRot=false; draw();
+    document.getElementById('sel-title').textContent='Selected · '+el.label+' – '+el.id;
+    document.getElementById('sel-rid').textContent=el.rid;
+    var re=document.getElementById('sel-rpn');
+    re.textContent=el.rpn+' ('+rpnLabel(el.rpn)+')';
+    re.style.color=el.rpn>350?'var(--red)':el.rpn>=125?'var(--orange)':el.rpn>=30?'#92400E':'var(--green-d)';
+    document.getElementById('sel-o').textContent=el.o+'.0';
+    document.getElementById('sel-s').textContent=el.s+'.0';
+    document.getElementById('sel-d').textContent=el.d+'.0';
+    var sb=el.status==='Pending'?'bp':el.status==='On Progress'?'bpg':'bd';
+    document.getElementById('sel-status').innerHTML='<span class="badge '+sb+'">'+el.status+'</span>';
+  }
+
+  function initBIM(){
+    if(BIM_INIT) return;
+    BIM_INIT=true;
+    canvas=document.getElementById('bim3dCanvas');
+    ctx=canvas.getContext('2d');
+    tooltip=document.getElementById('bim3d-tooltip');
+
+    canvas.addEventListener('mousedown',function(e){
+      dragging=true; lx=e.offsetX; ly=e.offsetY; autoRot=false;
+      canvas.style.cursor='grabbing';
+    });
+    canvas.addEventListener('mousemove',function(e){
+      if(dragging){
+        rotY+=(e.offsetX-lx)*0.5;
+        rotX=Math.max(-10,Math.min(60,rotX-(e.offsetY-ly)*0.4));
+        lx=e.offsetX; ly=e.offsetY; draw();
+      } else {
+        var hit=hitTest(e.offsetX,e.offsetY);
+        if(hit){
+          canvas.style.cursor='pointer';
+          tooltip.style.display='block';
+          tooltip.style.left=(e.offsetX+14)+'px';
+          tooltip.style.top=(e.offsetY-10)+'px';
+          tooltip.innerHTML='<div style="font-weight:700;margin-bottom:4px">'+hit.label+'</div>'+
+            '<div style="font-size:10px;color:#7EE8A2">'+hit.rid+' · RPN <b>'+hit.rpn+'</b></div>'+
+            '<div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">'+rpnLabel(hit.rpn)+'</div>'+
+            '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px">'+hit.status+'</div>';
+        } else {
+          canvas.style.cursor='grab';
+          tooltip.style.display='none';
+        }
+      }
+    });
+    canvas.addEventListener('mouseleave',function(){ dragging=false; tooltip.style.display='none'; });
+    canvas.addEventListener('click',function(e){
+      var hit=hitTest(e.offsetX,e.offsetY);
+      if(hit) selectEl(hit);
+    });
+    canvas.addEventListener('mouseup',function(){ dragging=false; canvas.style.cursor='grab'; });
+    canvas.addEventListener('wheel',function(e){
+      e.preventDefault();
+      sc=Math.max(50,Math.min(180,sc*(e.deltaY>0?0.9:1.1))); draw();
+    },{passive:false});
+
+    function tick(){
+      if(autoRot && !dragging){ rotY+=0.12; draw(); }
+      BIM_RAF=requestAnimationFrame(tick);
+    }
+    draw();
+    selectEl(ELEMENTS[0]);
+    tick();
+  }
+
+  function stopBIM(){
+    if(BIM_RAF){ cancelAnimationFrame(BIM_RAF); BIM_RAF=null; }
+    autoRot=true;
+  }
+
+  // Hook into showPage
+  var origShow=window.showPage;
+  window.showPage=function(id){
+    if(id==='bim'){
+      origShow(id);
+      setTimeout(function(){ initBIM(); autoRot=true; if(!BIM_RAF){ (function tick(){ if(autoRot&&!dragging){rotY+=0.12;draw();} BIM_RAF=requestAnimationFrame(tick); })(); } }, 50);
+    } else {
+      if(BIM_RAF){ cancelAnimationFrame(BIM_RAF); BIM_RAF=null; }
+      origShow(id);
+    }
+  };
+
+  window.bim3dZoom    = function(f){ sc=Math.max(50,Math.min(180,sc*f)); draw(); };
+  window.bim3dRotate  = function(d){ rotY+=d; draw(); };
+  window.bim3dTiltUp  = function(){ rotX=Math.max(-10,Math.min(60,rotX-8)); draw(); };
+  window.bim3dReset   = function(){ rotY=-30; rotX=28; sc=72; autoRot=true; draw(); };
+  window.bim3dToggleWire = function(){ wireframe=!wireframe; draw(); };
+})();
+</script>
